@@ -12,7 +12,7 @@
             name="mobile"
             :rules="[{ required: true, message: '请输入手机号!' }]"
         >
-          <a-input v-model:value="loginForm.mobile" placeholder="手机号"/>
+          <a-input v-model:value="loginForm.mail" placeholder="手机号"/>
         </a-form-item>
 
         <a-form-item
@@ -20,7 +20,7 @@
             name="code"
             :rules="[{ required: true, message: '请输入验证码!' }]"
         >
-          <a-input v-model:value="loginForm.code">
+          <a-input v-model:value="loginForm.mailCode">
             <template #addonAfter>
               <a @click="sendCode">获取验证码</a>
             </template>
@@ -50,18 +50,15 @@ export default defineComponent({
     const router = useRouter();
 
     const loginForm = reactive({
-      mobile: '13000000000',
-      code: '',
+      mail: '706716852@qq.com',
+      mailCode: '',
     });
 
     const sendCode = () => {
-      myAxios.post("/member/member/send-code", {
-        mobile: loginForm.mobile
-      }).then(response => {
+      myAxios.get(`/member/send/code?mail=${loginForm.mail}`).then(response => {
         let data = response.data;
         if (data.success) {
           notification.success({ description: '发送验证码成功！' });
-          loginForm.code = "8888";
         } else {
           notification.error({ description: data.message });
         }
@@ -69,13 +66,13 @@ export default defineComponent({
     };
 
     const login = () => {
-      myAxios.post("/member/member/login", loginForm).then((response) => {
+      myAxios.post("/member/authenticate", loginForm).then((response) => {
         let data = response.data;
         if (data.success) {
           notification.success({ description: '登录成功！' });
           // 登录成功，跳到控台主页
           router.push("/welcome");
-          store.commit("setMember", data.content);
+          store.commit("setMemberToSessionStorage", data.content);
         } else {
           notification.error({ description: data.message });
         }

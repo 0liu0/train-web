@@ -1,14 +1,27 @@
-import { createStore } from 'vuex'
+import {createStore} from 'vuex'
 
-export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
+const store = createStore({
+    state: {
+        member: JSON.parse(sessionStorage.getItem('member') || JSON.parse(localStorage.getItem('member')) || '{}')
+    },
+    getters: {
+        getMember: (state) => {
+            return state.member;
+        },
+    },
+    mutations: {
+        setMemberToSessionStorage(state, member) {
+            console.log("store member：", member);
+            state.member = member
+            sessionStorage.setItem('member', JSON.stringify(member))
+        },
+        setMemberToLocalStorage(state, member) {
+            console.log("store member：", member);
+            state.member = member
+            localStorage.setItem('member', JSON.stringify(member))
+        }
+    },
+    actions: {},
+    modules: {}
 })
+export default store;
