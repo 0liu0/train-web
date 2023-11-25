@@ -21,7 +21,7 @@ const myAxios = axios.create({
  */
 myAxios.interceptors.request.use(function (config) {
     console.log('请求参数：', config);
-    const token = store.state.member;
+    const token = store.state.member.token;
     if (Tool.isNotEmpty(token)) {
         config.headers.Authorization = "Bearer "+token;
         console.log("请求headers增加token:", token);
