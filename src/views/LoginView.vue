@@ -1,7 +1,9 @@
 <template>
   <a-row class="login">
     <a-col :span="8" :offset="8" class="login-main">
-      <h1 style="text-align: center"><rocket-two-tone />&nbsp;刘彻12306售票系统</h1>
+      <h1 style="text-align: center">
+        <rocket-two-tone/>&nbsp;刘彻12306售票系统
+      </h1>
       <a-form
           :model="loginForm"
           name="basic"
@@ -37,55 +39,44 @@
   </a-row>
 </template>
 
-<script>
-import { defineComponent, reactive } from 'vue';
-import { notification } from 'ant-design-vue';
-import { useRouter } from 'vue-router'
+<script setup>
+import {reactive} from 'vue';
+import {notification} from 'ant-design-vue';
+import {useRouter} from 'vue-router'
 import store from "@/store";
 import myAxios from "@/utils/myAxios";
 
-export default defineComponent({
-  name: "login-view",
-  setup() {
-    const router = useRouter();
+const router = useRouter();
 
-    const loginForm = reactive({
-      mail: '706716852@qq.com',
-      mailCode: '',
-    });
-
-    const sendCode = () => {
-      myAxios.get(`/member/send/code?mail=${loginForm.mail}`).then(response => {
-        let data = response.data;
-        if (data.success) {
-          notification.success({ description: '发送验证码成功！' });
-        } else {
-          notification.error({ description: data.message });
-        }
-      });
-    };
-
-    const login = () => {
-      myAxios.post("/member/authenticate", loginForm).then((response) => {
-        let data = response.data;
-        if (data.success) {
-          notification.success({ description: '登录成功！' });
-          // 登录成功，跳到控台主页
-          router.push("/welcome");
-          store.commit("setMemberToSessionStorage", data.content);
-        } else {
-          notification.error({ description: data.message });
-        }
-      })
-    };
-
-    return {
-      loginForm,
-      sendCode,
-      login
-    };
-  },
+const loginForm = reactive({
+  mail: '706716852@qq.com',
+  mailCode: '888888',
 });
+
+const sendCode = () => {
+  myAxios.get(`/member/user/send/code?mail=${loginForm.mail}`).then(response => {
+    let data = response.data;
+    if (data.success) {
+      notification.success({description: '发送验证码成功！'});
+    } else {
+      notification.error({description: data.message});
+    }
+  });
+};
+
+const login = () => {
+  myAxios.post("/member/user/authenticate", loginForm).then((response) => {
+    let data = response.data;
+    if (data.success) {
+      notification.success({description: '登录成功！'});
+      // 登录成功，跳到控台主页
+      router.push("/main/content");
+      store.commit("setMemberToSessionStorage", data.content);
+    } else {
+      notification.error({description: data.message});
+    }
+  })
+};
 </script>
 
 <style>
@@ -93,6 +84,7 @@ export default defineComponent({
   font-size: 25px;
   font-weight: bold;
 }
+
 .login-main {
   margin-top: 100px;
   padding: 30px 30px 20px;
