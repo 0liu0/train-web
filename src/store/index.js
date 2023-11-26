@@ -2,8 +2,11 @@ import {createStore} from 'vuex'
 
 const store = createStore({
     state: {
-        member: JSON.parse(sessionStorage.getItem('member') || JSON.parse(localStorage.getItem('member')) || '{}')
+        member: JSON.parse(sessionStorage.getItem('member')) ||
+            JSON.parse(localStorage.getItem('member')) ||
+            {}
     },
+
     getters: {
         getMember: (state) => {
             return state.member;
@@ -11,12 +14,10 @@ const store = createStore({
     },
     mutations: {
         setMemberToSessionStorage(state, member) {
-            console.log("store member：", member);
             state.member = member
             sessionStorage.setItem('member', JSON.stringify(member))
         },
         setMemberToLocalStorage(state, member) {
-            console.log("store member：", member);
             state.member = member
             localStorage.setItem('member', JSON.stringify(member))
         }

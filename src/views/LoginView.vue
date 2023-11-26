@@ -41,7 +41,7 @@
 
 <script setup>
 import {reactive} from 'vue';
-import {notification} from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import {useRouter} from 'vue-router'
 import store from "@/store";
 import myAxios from "@/utils/myAxios";
@@ -57,9 +57,9 @@ const sendCode = () => {
   myAxios.get(`/member/user/send/code?mail=${loginForm.mail}`).then(response => {
     let data = response.data;
     if (data.success) {
-      notification.success({description: '发送验证码成功！'});
+      message.success('发送验证码成功！');
     } else {
-      notification.error({description: data.message});
+      message.error(data.message);
     }
   });
 };
@@ -68,12 +68,12 @@ const login = () => {
   myAxios.post("/member/user/authenticate", loginForm).then((response) => {
     let data = response.data;
     if (data.success) {
-      notification.success({description: '登录成功！'});
+      message.success('登录成功！');
       // 登录成功，跳到控台主页
-      router.push("/main/content");
-      store.commit("setMemberToSessionStorage", data.content);
+      router.push("/content");
+      store.commit('setMemberToSessionStorage', data.content);
     } else {
-      notification.error({description: data.message});
+      message.error(data.message);
     }
   })
 };
