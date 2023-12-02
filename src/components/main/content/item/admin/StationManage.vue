@@ -7,7 +7,7 @@
       <template v-if="column.key === 'name'">
         <span>
           <smile-outlined/>
-          乘客姓名
+          站名
         </span>
       </template>
     </template>
@@ -17,15 +17,6 @@
         <a>
           {{ record.name }}
         </a>
-      </template>
-      <template v-else-if="column.key === 'type'">
-        <span>
-          <a-tag
-              :color="'green'"
-          >
-            {{ getTagChinese(record.type) }}
-          </a-tag>
-        </span>
       </template>
       <template v-else-if="column.key === 'action'">
         <span>
@@ -44,29 +35,14 @@
   <div>
     <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addPassenger">
       <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="乘客姓名">
+        <a-form-item label="站名">
           <a-input v-model:value="addFormState.name"/>
         </a-form-item>
-        <a-form-item label="身份证号">
-          <a-input v-model:value="addFormState.idCard"/>
+        <a-form-item label="站名拼音">
+          <a-input v-model:value="addFormState.namePinyin"/>
         </a-form-item>
-        <a-form-item label="邮箱账号">
-          <a-input v-model:value="addFormState.mail"/>
-        </a-form-item>
-        <a-form-item label="乘客类型">
-          <a-select v-model:value="addFormState.type">
-            <a-select-opt-group>
-              <template #label>
-                <span>
-                  <user-outlined/>
-                  乘客类型
-                </span>
-              </template>
-              <a-select-option value="1">成人</a-select-option>
-              <a-select-option value="2">儿童</a-select-option>
-              <a-select-option value="3">学生</a-select-option>
-            </a-select-opt-group>
-          </a-select>
+        <a-form-item label="站名首字母拼音">
+          <a-input v-model:value="addFormState.namePy"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -75,29 +51,14 @@
   <div>
     <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改乘客信息" @ok="updPassengerInfo">
       <a-form :model="curPassengerInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="乘客姓名">
-          <a-input v-model:value="curPassengerInfo.name" readonly/>
+        <a-form-item label="站名">
+          <a-input v-model:value="curPassengerInfo.name"/>
         </a-form-item>
-        <a-form-item label="身份证号">
-          <a-input v-model:value="curPassengerInfo.idCard" readonly/>
+        <a-form-item label="站名拼音">
+          <a-input v-model:value="curPassengerInfo.namePinyin"/>
         </a-form-item>
-        <a-form-item label="邮箱账号">
-          <a-input v-model:value="curPassengerInfo.mail"/>
-        </a-form-item>
-        <a-form-item label="乘客类型">
-          <a-select v-model:value="curPassengerInfo.type">
-            <a-select-opt-group>
-              <template #label>
-                <span>
-                  <user-outlined/>
-                  乘客类型
-                </span>
-              </template>
-              <a-select-option value="1">成人</a-select-option>
-              <a-select-option value="2">儿童</a-select-option>
-              <a-select-option value="3">学生</a-select-option>
-            </a-select-opt-group>
-          </a-select>
+        <a-form-item label="站名拼音首字母">
+          <a-input v-model:value="curPassengerInfo.namePy"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -115,25 +76,19 @@ let addPsgState = ref(false)
 let updPsgState = ref(false)
 const columns = [
   {
-    name: '姓名',
+    name: '站名',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: '身份证号',
-    dataIndex: 'idCard',
+    title: '站名拼音',
+    dataIndex: 'namePinyin',
     key: 'idCard',
   },  {
-    title: '乘客邮箱',
-    dataIndex: 'mail',
+    title: '站名拼音首字母',
+    dataIndex: 'namePy',
     key: 'mail',
-  },
-  {
-    title: '乘客类型',
-    dataIndex: 'type',
-    key: 'type',
-  },
-  {
+  },{
     title: '操作',
     key: 'action',
   },
@@ -149,17 +104,15 @@ const wrapperCol = {
 const passengerList = ref([
   {
     id: 1,
-    name: 'John Brown',
-    idCard: 32,
-    type: 'New York No. 1 Lake Park'
+    namePinyin: 'John Brown',
+    namePy: 'New York No. 1 Lake Park'
   },
 ])
 const initialFormState = {
-  memberId: '',
+  id: '',
   name: '',
-  idCard: '',
-  mail: '',
-  type: ''
+  namePinyin: '',
+  namePy: '',
 };
 
 const addFormState = reactive({ ...initialFormState });
@@ -171,11 +124,9 @@ function resetFormState() {
 }
 let curPassengerInfo = reactive({
   id: '',
-  memberId: '',
   name: '',
-  idCard: '',
-  mail: '',
-  type: ''
+  namePinyin: '',
+  namePy: ''
 });
 
 const pagination = reactive({
@@ -188,16 +139,8 @@ onMounted(() => {
 })
 
 // ----------------------------------------
-const getTagChinese = (tag) => {
-  const tagMap = {
-    1: '成人',
-    2: '儿童',
-    3: '学生'
-  };
-  return tagMap[tag] || '未知';
-}
 const fetchData = () => {
-  myAxios.post("/member/passenger/get/list", {
+  myAxios.post("/business/station/query", {
     size: pagination.pageSize,
     page: pagination.current
   }).then(resp => {
@@ -225,7 +168,7 @@ const handleTableChange = (newPagination) => {
 }
 // 执行对乘客的一些基本操作
 const updPassengerInfo = () => {
-  myAxios.post("/member/passenger/update",curPassengerInfo).then(resp => {
+  myAxios.post("/business/station/update",curPassengerInfo).then(resp => {
     if (resp.data.code === 0) {
       message.success("修改乘客信息成功")
       fetchData()
@@ -237,7 +180,7 @@ const updPassengerInfo = () => {
 }
 
 const deletePassenger = (id) => {
-  myAxios.get(`/member/passenger/delete/${id}`).then(resp => {
+  myAxios.get(`/business/station/delete/${id}`).then(resp => {
     if (resp.data.code === 0) {
       message.success("删除成功！")
       fetchData()
@@ -252,7 +195,7 @@ const addPassenger = () => {
   // 将会员id传入
   addFormState.memberId = store.state.member.id
   // 保存至数据库
-  myAxios.post("/member/passenger/save", addFormState).then(resp => {
+  myAxios.post("/business/station/save", addFormState).then(resp => {
     if (resp.data.code === 0) {
       message.success("新增乘客成功")
       fetchData()
@@ -272,15 +215,13 @@ const showUpdPsgModal = (id) => {
   curPassengerId.value = id;
   updPsgState.value = true;
 
-  myAxios.get(`/member/passenger/get/${id}`).then(resp => {
+  myAxios.get(`/business/station/get/${id}`).then(resp => {
     if (resp.data.code === 0) {
-      const passengerInfo = resp.data.content;
-      curPassengerInfo.id = passengerInfo.id;
-      curPassengerInfo.memberId = passengerInfo.memberId;
-      curPassengerInfo.name = passengerInfo.name;
-      curPassengerInfo.idCard = passengerInfo.idCard;
-      curPassengerInfo.mail = passengerInfo.mail;
-      curPassengerInfo.type = passengerInfo.type;
+      const info = resp.data.content;
+      curPassengerInfo.id = info.id;
+      curPassengerInfo.name = info.name;
+      curPassengerInfo.namePinyin = info.namePinyin;
+      curPassengerInfo.namePy = info.namePy;
     } else {
       message.warn("网络繁忙，请稍后再试！");
     }

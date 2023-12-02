@@ -4,33 +4,24 @@
   <a-table style="padding: 0 20px" :columns="columns" :data-source="passengerList" :pagination="pagination"
            @change="handleTableChange">
     <template #headerCell="{ column }">
-      <template v-if="column.key === 'name'">
+      <template v-if="column.key === 'trainCode'">
         <span>
           <smile-outlined/>
-          乘客姓名
+          车次编号
         </span>
       </template>
     </template>
 
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'name'">
+      <template v-if="column.key === 'trainCode'">
         <a>
-          {{ record.name }}
+          {{ record.trainCode }}
         </a>
-      </template>
-      <template v-else-if="column.key === 'type'">
-        <span>
-          <a-tag
-              :color="'green'"
-          >
-            {{ getTagChinese(record.type) }}
-          </a-tag>
-        </span>
       </template>
       <template v-else-if="column.key === 'action'">
         <span>
           <a-button class="btn" type="primary" @click="showUpdPsgModal(record.id)">修改</a-button>
-          <a-popconfirm title="确定要删除此用户吗？" @confirm="deletePassenger(record.id)" okText="确认"
+          <a-popconfirm title="确定要删除此数据吗？" @confirm="deletePassenger(record.id)" okText="确认"
                         cancel-text="取消">
             <template #icon><question-circle-outlined style="color: red"/></template>
             <a-button class="btn" type="primary" danger>删除</a-button>
@@ -44,29 +35,23 @@
   <div>
     <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addPassenger">
       <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="乘客姓名">
-          <a-input v-model:value="addFormState.name"/>
+        <a-form-item label="车次编号">
+          <a-input v-model:value="addFormState.trainCode"/>
         </a-form-item>
-        <a-form-item label="身份证号">
-          <a-input v-model:value="addFormState.idCard"/>
+        <a-form-item label="厢号">
+          <a-input v-model:value="addFormState.carriageIndex"/>
         </a-form-item>
-        <a-form-item label="邮箱账号">
-          <a-input v-model:value="addFormState.mail"/>
+        <a-form-item label="座位类型">
+          <a-input v-model:value="addFormState.seatType"/>
         </a-form-item>
-        <a-form-item label="乘客类型">
-          <a-select v-model:value="addFormState.type">
-            <a-select-opt-group>
-              <template #label>
-                <span>
-                  <user-outlined/>
-                  乘客类型
-                </span>
-              </template>
-              <a-select-option value="1">成人</a-select-option>
-              <a-select-option value="2">儿童</a-select-option>
-              <a-select-option value="3">学生</a-select-option>
-            </a-select-opt-group>
-          </a-select>
+        <a-form-item label="座位数">
+          <a-input v-model:value="addFormState.seatCount"/>
+        </a-form-item>
+        <a-form-item label="排数">
+          <a-input v-model:value="addFormState.rowCount"/>
+        </a-form-item>
+        <a-form-item label="列数">
+          <a-input v-model:value="addFormState.colCount"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -75,29 +60,23 @@
   <div>
     <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改乘客信息" @ok="updPassengerInfo">
       <a-form :model="curPassengerInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="乘客姓名">
-          <a-input v-model:value="curPassengerInfo.name" readonly/>
+        <a-form-item label="车次编号">
+          <a-input v-model:value="curPassengerInfo.trainCode"/>
         </a-form-item>
-        <a-form-item label="身份证号">
-          <a-input v-model:value="curPassengerInfo.idCard" readonly/>
+        <a-form-item label="厢号">
+          <a-input v-model:value="curPassengerInfo.carriageIndex"/>
         </a-form-item>
-        <a-form-item label="邮箱账号">
-          <a-input v-model:value="curPassengerInfo.mail"/>
+        <a-form-item label="座位类型">
+          <a-input v-model:value="curPassengerInfo.seatType"/>
         </a-form-item>
-        <a-form-item label="乘客类型">
-          <a-select v-model:value="curPassengerInfo.type">
-            <a-select-opt-group>
-              <template #label>
-                <span>
-                  <user-outlined/>
-                  乘客类型
-                </span>
-              </template>
-              <a-select-option value="1">成人</a-select-option>
-              <a-select-option value="2">儿童</a-select-option>
-              <a-select-option value="3">学生</a-select-option>
-            </a-select-opt-group>
-          </a-select>
+        <a-form-item label="座位数">
+          <a-input v-model:value="curPassengerInfo.seatCount"/>
+        </a-form-item>
+        <a-form-item label="排数">
+          <a-input v-model:value="curPassengerInfo.rowCount"/>
+        </a-form-item>
+        <a-form-item label="列数">
+          <a-input v-model:value="curPassengerInfo.colCount"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -115,25 +94,32 @@ let addPsgState = ref(false)
 let updPsgState = ref(false)
 const columns = [
   {
-    name: '姓名',
-    dataIndex: 'name',
-    key: 'name',
+    name: '车次编号',
+    dataIndex: 'trainCode',
+    key: 'trainCode',
   },
   {
-    title: '身份证号',
-    dataIndex: 'idCard',
-    key: 'idCard',
+    title: '厢号',
+    dataIndex: 'carriageIndex',
+    key: 'carriageIndex',
   },  {
-    title: '乘客邮箱',
-    dataIndex: 'mail',
-    key: 'mail',
+    title: '座位类型',
+    dataIndex: 'seatType',
+    key: 'seatType',
   },
   {
-    title: '乘客类型',
-    dataIndex: 'type',
-    key: 'type',
-  },
-  {
+    title: '座位数',
+    dataIndex: 'seatCount',
+    key: 'seatCount',
+  },{
+    title: '排数',
+    dataIndex: 'rowCount',
+    key: 'rowCount',
+  },{
+    title: '列数',
+    dataIndex: 'colCount',
+    key: 'colCount',
+  },{
     title: '操作',
     key: 'action',
   },
@@ -148,18 +134,23 @@ const wrapperCol = {
 };
 const passengerList = ref([
   {
-    id: 1,
-    name: 'John Brown',
-    idCard: 32,
-    type: 'New York No. 1 Lake Park'
+    id: '1',
+    trainCode: '2',
+    carriageIndex: '3',
+    seatType: '4',
+    seatCount: '5',
+    rowCount: '6',
+    colCount: '7'
   },
 ])
 const initialFormState = {
-  memberId: '',
-  name: '',
-  idCard: '',
-  mail: '',
-  type: ''
+  id: '',
+  trainCode: '',
+  carriageIndex: '',
+  seatType: '',
+  seatCount: '',
+  rowCount: '',
+  colCount: ''
 };
 
 const addFormState = reactive({ ...initialFormState });
@@ -171,11 +162,12 @@ function resetFormState() {
 }
 let curPassengerInfo = reactive({
   id: '',
-  memberId: '',
-  name: '',
-  idCard: '',
-  mail: '',
-  type: ''
+  trainCode: '',
+  carriageIndex: '',
+  seatType: '',
+  seatCount: '',
+  rowCount: '',
+  colCount: ''
 });
 
 const pagination = reactive({
@@ -188,16 +180,8 @@ onMounted(() => {
 })
 
 // ----------------------------------------
-const getTagChinese = (tag) => {
-  const tagMap = {
-    1: '成人',
-    2: '儿童',
-    3: '学生'
-  };
-  return tagMap[tag] || '未知';
-}
 const fetchData = () => {
-  myAxios.post("/member/passenger/get/list", {
+  myAxios.post("/business/train_carriage/query", {
     size: pagination.pageSize,
     page: pagination.current
   }).then(resp => {
@@ -225,7 +209,7 @@ const handleTableChange = (newPagination) => {
 }
 // 执行对乘客的一些基本操作
 const updPassengerInfo = () => {
-  myAxios.post("/member/passenger/update",curPassengerInfo).then(resp => {
+  myAxios.post("/business/train_carriage/update",curPassengerInfo).then(resp => {
     if (resp.data.code === 0) {
       message.success("修改乘客信息成功")
       fetchData()
@@ -237,7 +221,7 @@ const updPassengerInfo = () => {
 }
 
 const deletePassenger = (id) => {
-  myAxios.get(`/member/passenger/delete/${id}`).then(resp => {
+  myAxios.get(`/business/train_carriage/delete/${id}`).then(resp => {
     if (resp.data.code === 0) {
       message.success("删除成功！")
       fetchData()
@@ -252,7 +236,7 @@ const addPassenger = () => {
   // 将会员id传入
   addFormState.memberId = store.state.member.id
   // 保存至数据库
-  myAxios.post("/member/passenger/save", addFormState).then(resp => {
+  myAxios.post("/business/train_carriage/save", addFormState).then(resp => {
     if (resp.data.code === 0) {
       message.success("新增乘客成功")
       fetchData()
@@ -272,15 +256,16 @@ const showUpdPsgModal = (id) => {
   curPassengerId.value = id;
   updPsgState.value = true;
 
-  myAxios.get(`/member/passenger/get/${id}`).then(resp => {
+  myAxios.get(`/business/train_carriage/get/${id}`).then(resp => {
     if (resp.data.code === 0) {
-      const passengerInfo = resp.data.content;
-      curPassengerInfo.id = passengerInfo.id;
-      curPassengerInfo.memberId = passengerInfo.memberId;
-      curPassengerInfo.name = passengerInfo.name;
-      curPassengerInfo.idCard = passengerInfo.idCard;
-      curPassengerInfo.mail = passengerInfo.mail;
-      curPassengerInfo.type = passengerInfo.type;
+      const info = resp.data.content;
+      curPassengerInfo.id = info.id;
+      curPassengerInfo.trainCode = info.trainCode;
+      curPassengerInfo.carriageIndex = info.carriageIndex;
+      curPassengerInfo.seatType = info.seatType;
+      curPassengerInfo.seatCount = info.seatCount;
+      curPassengerInfo.rowCount = info.rowCount;
+      curPassengerInfo.colCount = info.colCount;
     } else {
       message.warn("网络繁忙，请稍后再试！");
     }
