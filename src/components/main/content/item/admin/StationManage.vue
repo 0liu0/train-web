@@ -206,7 +206,7 @@ const fetchData = () => {
         passengerList.value = null
       } else {
         passengerList.value = resp.data.content.list;
-        pagination.total = resp.data.content.total;
+        pagination.total = parseInt(resp.data.content.total);
       }
     } else {
       message.error("网络错误，请重试！")

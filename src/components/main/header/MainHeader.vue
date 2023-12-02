@@ -10,7 +10,12 @@
       <a-menu-item key="1">
         <router-link to="/content">首页</router-link>
       </a-menu-item>
+      <!--只有管理元用户可以进行该页面的管理-->
+<!--      <a-menu-item key="2" v-if="store.state.member.id===1">-->
       <a-menu-item key="2">
+        <router-link to="/admin">火车管理</router-link>
+      </a-menu-item>
+      <a-menu-item key="3">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
 <!--      <a-menu-item key="3">-->
