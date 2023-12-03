@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
 import MainSider from "@/components/main/content/item/main/MainSider.vue";
 
 </script>

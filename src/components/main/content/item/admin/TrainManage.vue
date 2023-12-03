@@ -1,7 +1,8 @@
 <template>
-  <a-button style="float: left;margin: -10px 0 20px 40px" @click="showAddPsgModal">新增</a-button>
+  <a-button style="float: left;margin: -10px 0 20px 40px" @click="showAddModal">新增</a-button>
+  <a-button style="float: left;margin: -10px 0 5px 10px" @click="fetchData">刷新</a-button>
   <!-- 用户列表主体部分 -->
-  <a-table style="padding: 0 20px" :columns="columns" :data-source="passengerList" :pagination="pagination"
+  <a-table style="padding: 0 20px" :columns="columns" :data-source="list" :pagination="pagination"
            @change="handleTableChange">
     <template #headerCell="{ column }">
       <template v-if="column.key === 'code'">
@@ -20,7 +21,7 @@
       </template>
       <template v-else-if="column.key === 'action'">
         <span>
-          <a-button class="btn" type="primary" @click="showUpdPsgModal(record.id)">修改</a-button>
+          <a-button class="btn" type="primary" @click="showUpdModal(record.id)">修改</a-button>
           <a-popconfirm title="确定要删除此数据吗？" @confirm="deletePassenger(record.id)" okText="确认"
                         cancel-text="取消">
             <template #icon><question-circle-outlined style="color: red"/></template>
@@ -31,64 +32,68 @@
     </template>
   </a-table>
   <!-- 弹窗 -->
-  <!-- 新建乘客弹窗 -->
+  <!-- 新建火车弹窗 -->
   <div>
-    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addPassenger">
-      <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addState" title="新增火车信息" @ok="add">
+      <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="addFormState.code"/>
+          <a-input v-model:value="formState.code"/>
         </a-form-item>
         <a-form-item label="车次类型">
-          <a-input v-model:value="addFormState.type"/>
+          <a-select v-model:value="formState.type" style="width: 100%">
+            <a-select-option value="G">高铁</a-select-option>
+            <a-select-option value="D">动车</a-select-option>
+            <a-select-option value="K">快速</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="始发站">
-          <a-input v-model:value="addFormState.start"/>
+          <a-input v-model:value="formState.start"/>
         </a-form-item>
         <a-form-item label="始发站拼音">
-          <a-input v-model:value="addFormState.startPinyin"/>
+          <a-input v-model:value="formState.startPinyin"/>
         </a-form-item>
         <a-form-item label="出发时间">
-          <a-input v-model:value="addFormState.startTime"/>
+          <a-time-picker v-model:value="timeTemp.startTime" format="HH:mm:ss"/>
         </a-form-item>
-        <a-form-item label="重点站">
-          <a-input v-model:value="addFormState.end"/>
+        <a-form-item label="终点站">
+          <a-input v-model:value="formState.end"/>
         </a-form-item>
         <a-form-item label="终点站拼音">
-          <a-input v-model:value="addFormState.endPinyin"/>
+          <a-input v-model:value="formState.endPinyin"/>
         </a-form-item>
         <a-form-item label="到站时间">
-          <a-input v-model:value="addFormState.endTime"/>
+          <a-time-picker v-model:value="timeTemp.endTime" format="HH:mm:ss"/>
         </a-form-item>
       </a-form>
     </a-modal>
   </div>
-  <!-- 修改乘客信息弹窗 -->
+  <!-- 修改火车信息弹窗 -->
   <div>
-    <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改乘客信息" @ok="updPassengerInfo">
-      <a-form :model="curPassengerInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改火车信息" @ok="updPassengerInfo">
+      <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="curPassengerInfo.code"/>
+          <a-input v-model:value="formState.code"/>
         </a-form-item>
         <a-form-item label="车次类型">
-          <a-input v-model:value="curPassengerInfo.type"/>
+          <a-input v-model:value="formState.type"/>
         </a-form-item>
         <a-form-item label="始发站">
-          <a-input v-model:value="curPassengerInfo.start"/>
+          <a-input v-model:value="formState.start"/>
         </a-form-item>
         <a-form-item label="始发站拼音">
-          <a-input v-model:value="curPassengerInfo.startPinyin"/>
+          <a-input :value="formState.startPinyin" class="disabled-input" disabled/>
         </a-form-item>
         <a-form-item label="出发时间">
-          <a-input v-model:value="curPassengerInfo.startTime"/>
+          <a-input v-model:value="formState.startTime"/>
         </a-form-item>
         <a-form-item label="重点站">
-          <a-input v-model:value="curPassengerInfo.end"/>
+          <a-input v-model:value="formState.end"/>
         </a-form-item>
         <a-form-item label="终点站拼音">
-          <a-input v-model:value="curPassengerInfo.endPinyin"/>
+          <a-input v-model:value="formState.endPinyin" class="disabled-input" disabled/>
         </a-form-item>
         <a-form-item label="到站时间">
-          <a-input v-model:value="curPassengerInfo.endTime"/>
+          <a-input v-model:value="formState.endTime"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -96,13 +101,15 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
 import store from "@/store";
-
-let curPassengerId = ref(0);
-let addPsgState = ref(false)
+import {pinyin} from "pinyin-pro";
+import dayjs from "dayjs";
+dayjs.locale('zh-cn') // 使用本地化语言
+let curId = ref(0);
+let addState = ref(false)
 let updPsgState = ref(false)
 const columns = [
   {
@@ -151,7 +158,7 @@ const labelCol = {
 const wrapperCol = {
   span: 14,
 };
-const passengerList = ref([
+const list = ref([
   {
     id: '1',
     trainCode: '2',
@@ -174,16 +181,19 @@ const initialFormState = {
   endTime: ''
 };
 
-const addFormState = reactive({...initialFormState});
+const timeTemp = reactive({
+  startTime:'',
+  endTime:''
+})
+
+let formState = reactive({...initialFormState});
 
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
   Object.keys(initialFormState).forEach(key => {
-    addFormState[key] = initialFormState[key];
+    formState[key] = initialFormState[key];
   });
 }
-
-let curPassengerInfo = reactive({...initialFormState});
 
 const pagination = reactive({
   current: 1, // 当前页数
@@ -193,8 +203,21 @@ const pagination = reactive({
 onMounted(() => {
   fetchData()
 })
+// -----------------------计算属性--------------------------
+formState.startPinyin = computed({
+  get() {
+    return pinyin(formState.start, {toneType: 'none'}).replaceAll(" ", "")
+  }, set(v) {
+  }
+})
+formState.endPinyin = computed({
+  get() {
+    return pinyin(formState.end, {toneType: 'none'}).replaceAll(" ", "")
+  }, set(v) {
+  }
+})
 
-// ----------------------------------------
+// -----------------------方法-----------------------------
 const fetchData = () => {
   myAxios.post("/business/train/query", {
     size: pagination.pageSize,
@@ -202,9 +225,9 @@ const fetchData = () => {
   }).then(resp => {
     if (resp.data.code === 0) {
       if (resp.data.content === null) {
-        passengerList.value = null
+        list.value = null
       } else {
-        passengerList.value = resp.data.content.list;
+        list.value = resp.data.content.list;
         pagination.total = parseInt(resp.data.content.total);
       }
     } else {
@@ -224,7 +247,7 @@ const handleTableChange = (newPagination) => {
 }
 // 执行对乘客的一些基本操作
 const updPassengerInfo = () => {
-  myAxios.post("/business/train/update", curPassengerInfo).then(resp => {
+  myAxios.post("/business/train/update", formState).then(resp => {
     if (resp.data.code === 0) {
       message.success("修改乘客信息成功")
       fetchData()
@@ -246,16 +269,26 @@ const deletePassenger = (id) => {
   })
 }
 
-const addPassenger = () => {
+const add = () => {
   // 校验参数是否合法 todo
   // 将会员id传入
-  addFormState.memberId = store.state.member.id
-  // 保存至数据库
-  myAxios.post("/business/train/save", addFormState).then(resp => {
+  formState.memberId = store.state.member.id
+  // 格式化时间为后端所需格式
+  formState.startTime = dayjs(timeTemp.startTime).locale('zh-cn').format('HH:mm:ss');
+  formState.endTime= dayjs(timeTemp.endTime).locale('zh-cn').format('HH:mm:ss');
+
+
+  // 打印格式化后的时间以进行调试
+  console.log("newStartTime:", formState.startTime);
+  console.log("newEndTime:", formState.endTime);
+
+  console.log("formState:", formState)
+  // 调用保存接口
+  myAxios.post("/business/train/save", formState).then(resp => {
     if (resp.data.code === 0) {
-      message.success("新增乘客成功")
+      message.success("新增火车信息成功")
       fetchData()
-      addPsgState.value = false
+      addState.value = false
       resetFormState()
     } else {
       message.warn(resp.data.message)
@@ -264,31 +297,39 @@ const addPassenger = () => {
 }
 
 // 展示新增或修改菜单
-const showAddPsgModal = () => {
-  addPsgState.value = true
+const showAddModal = () => {
+  addState.value = true
+  resetFormState()
 }
-const showUpdPsgModal = (id) => {
-  curPassengerId.value = id;
+const showUpdModal = (id) => {
+  curId.value = id;
+  resetFormState()
   updPsgState.value = true;
 
   myAxios.get(`/business/train/get/${id}`).then(resp => {
     if (resp.data.code === 0) {
       const info = resp.data.content;
-      curPassengerInfo.id = info.id;
-      curPassengerInfo.code = info.code;
-      curPassengerInfo.type = info.type;
-      curPassengerInfo.start = info.start;
-      curPassengerInfo.startPinyin = info.startPinyin;
-      curPassengerInfo.startTime = info.startTime;
-      curPassengerInfo.end = info.end;
-      curPassengerInfo.endPinyin = info.endPinyin;
-      curPassengerInfo.endTime = info.endTime;
+      formState.id = info.id;
+      formState.code = info.code;
+      formState.type = info.type;
+      formState.start = info.start;
+      formState.startPinyin = info.startPinyin;
+      formState.startTime = info.startTime;
+      formState.end = info.end;
+      formState.endPinyin = info.endPinyin;
+      formState.endTime = info.endTime;
     } else {
       message.warn("网络繁忙，请稍后再试！");
     }
   });
 }
 
+const testDayjs = ()=> {
+  let date = dayjs('2018-05-05 11:10:11')
+      .locale('zh-cn')
+      .format('HH:mm:ss') // 在这个实例上使用简体中文
+  console.log("date:" + date)
+}
 </script>
 
 <style scoped>

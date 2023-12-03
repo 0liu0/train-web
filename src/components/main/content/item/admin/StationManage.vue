@@ -33,7 +33,7 @@
   <!-- 弹窗 -->
   <!-- 新建乘客弹窗 -->
   <div>
-    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addPassenger">
+    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增车站信息" @ok="addPassenger">
       <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="站名">
           <a-input v-model:value="addFormState.name"/>
@@ -66,10 +66,11 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
 import store from "@/store";
+import {pinyin} from "pinyin-pro";
 
 let curPassengerId = ref(0);
 let addPsgState = ref(false)
@@ -84,11 +85,11 @@ const columns = [
     title: '站名拼音',
     dataIndex: 'namePinyin',
     key: 'idCard',
-  },  {
+  }, {
     title: '站名拼音首字母',
     dataIndex: 'namePy',
     key: 'mail',
-  },{
+  }, {
     title: '操作',
     key: 'action',
   },
@@ -115,13 +116,28 @@ const initialFormState = {
   namePy: '',
 };
 
-const addFormState = reactive({ ...initialFormState });
+const addFormState = reactive({...initialFormState});
+// ---------------------计算属性-------------------------
+addFormState.namePinyin = computed({
+  get() {
+    return pinyin(addFormState.name, {toneType: 'none'}).replaceAll(" ", "")
+  }, set(v) {
+  }
+})
+addFormState.namePy = computed({
+  get() {
+    return pinyin(addFormState.name, {pattern: 'first', toneType: 'none'}).replaceAll(" ", "")
+  }, set(v) {
+  }
+})
+
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
   Object.keys(initialFormState).forEach(key => {
     addFormState[key] = initialFormState[key];
   });
 }
+
 let curPassengerInfo = reactive({
   id: '',
   name: '',
@@ -145,7 +161,7 @@ const fetchData = () => {
     page: pagination.current
   }).then(resp => {
     if (resp.data.code === 0) {
-      if (resp.data.content===null) {
+      if (resp.data.content === null) {
         passengerList.value = null
       } else {
         passengerList.value = resp.data.content.list;
@@ -168,7 +184,7 @@ const handleTableChange = (newPagination) => {
 }
 // 执行对乘客的一些基本操作
 const updPassengerInfo = () => {
-  myAxios.post("/business/station/update",curPassengerInfo).then(resp => {
+  myAxios.post("/business/station/update", curPassengerInfo).then(resp => {
     if (resp.data.code === 0) {
       message.success("修改乘客信息成功")
       fetchData()
@@ -184,7 +200,7 @@ const deletePassenger = (id) => {
     if (resp.data.code === 0) {
       message.success("删除成功！")
       fetchData()
-    }else {
+    } else {
       message.warn("系统繁忙，请稍后再试！")
     }
   })
