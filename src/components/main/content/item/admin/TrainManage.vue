@@ -64,6 +64,7 @@
         <a-form-item label="到站时间">
           <a-time-picker v-model:value="timeTemp.endTime" format="HH:mm:ss"/>
         </a-form-item>
+        <selectStationInput :treeData = 'metaList'/>
       </a-form>
     </a-modal>
   </div>
@@ -107,10 +108,12 @@ import {message} from "ant-design-vue";
 import store from "@/store";
 import {pinyin} from "pinyin-pro";
 import dayjs from "dayjs";
+import SelectStationInput from "@/components/main/content/item/components/SelectStationInput.vue";
 dayjs.locale('zh-cn') // 使用本地化语言
 let curId = ref(0);
 let addState = ref(false)
 let updPsgState = ref(false)
+const metaList = ref([]);
 const columns = [
   {
     name: '车次编号',
@@ -187,7 +190,10 @@ const timeTemp = reactive({
 })
 
 let formState = reactive({...initialFormState});
-
+onMounted(() => {
+  getStationMeta();
+  console.log("metaList:" + metaList.value)
+})
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
   Object.keys(initialFormState).forEach(key => {
@@ -323,12 +329,14 @@ const showUpdModal = (id) => {
     }
   });
 }
-
-const testDayjs = ()=> {
-  let date = dayjs('2018-05-05 11:10:11')
-      .locale('zh-cn')
-      .format('HH:mm:ss') // 在这个实例上使用简体中文
-  console.log("date:" + date)
+const getStationMeta = ()=> {
+  myAxios.get("/business/station/station_label/list").then(resp => {
+    if (resp.data.code === 0) {
+      metaList.value = resp.data.content;
+    } else {
+      message.warn("网络繁忙，请稍后再试！")
+    }
+  })
 }
 </script>
 
