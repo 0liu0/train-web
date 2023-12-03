@@ -10,11 +10,7 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
 import AdminSider from "@/components/main/content/item/admin/AdminSider.vue";
-
-const selectedKeys2 = ref(['1']);
-const openKeys = ref(['sub1']);
 </script>
 
 <style scoped>

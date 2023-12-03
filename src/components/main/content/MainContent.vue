@@ -13,8 +13,6 @@
 import {ref} from "vue";
 import MainSider from "@/components/main/content/item/main/MainSider.vue";
 
-const selectedKeys2 = ref(['1']);
-const openKeys = ref(['sub1']);
 </script>
 
 <style scoped>

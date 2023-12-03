@@ -1,6 +1,6 @@
 <template>
   <a-layout-sider width="200" style="background: #fff">
-    <a-menu :selectedKeys="selectedKeys"
+    <a-menu :selectedKeys="selectedKey"
             @select="changeContent"
             mode="inline"
             style="height: 100%"
@@ -31,6 +31,27 @@
 
 <script setup>
 import router from "@/router";
+import {onMounted, ref} from "vue";
+
+const selectedKey = ref(['1']);
+const arr = ['/admin/station-manage', '/admin/train-manage', '/admin/train-carriage', '/admin/train-seat', '/admin/train-station']
+// 初始化时从localStorage读取selectedKey
+onMounted(() => {
+  const storedSelectedKey = localStorage.getItem("selectedKeyForAdmin");
+  if (storedSelectedKey) {
+    selectedKey.value = [storedSelectedKey];
+    navigateTo(arr[storedSelectedKey - 1])
+  } else {
+    const index = selectedKey.value[0] - 1
+    navigateTo(arr[index])
+  }
+});
+
+const changeContent = (info) => {
+  selectedKey.value = [info.key];
+  // 选项改变时更新localStorage
+  localStorage.setItem("selectedKeyForAdmin", info.key);
+};
 
 const navigateTo = (route) => {
   router.push(route);
