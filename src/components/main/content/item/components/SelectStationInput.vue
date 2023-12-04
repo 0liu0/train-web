@@ -5,7 +5,7 @@
       show-search
       style="width: 100%"
       :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-      placeholder="Please select"
+      placeholder="请选择"
       allow-clear
       tree-default-expand-all
       :tree-data="props.treeData"
@@ -37,6 +37,7 @@
 import {ref, watch} from 'vue';
 
 const props = defineProps(['treeData'])
+const emit = defineEmits(['getStationStartInfo', 'getStationEndInfo'])
 const value = ref();
 // const treeData = ref([
 //   {
@@ -53,14 +54,15 @@ const value = ref();
 //     value: 'parent 4'
 //   }
 // ]);
-watch(value, () => {
-  console.log(value.value);
+watch(value, (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    emit('getStationStartInfo', newValue);
+    emit('getStationEndInfo', newValue);
+    // 重置 searchValue
+    searchValue.value = '';
+  }
 });
-const searchValue = ref('');
-
-// onMounted(() => {
-//   getStationMeta()
-// })
+let searchValue = ref('');
 
 </script>
 

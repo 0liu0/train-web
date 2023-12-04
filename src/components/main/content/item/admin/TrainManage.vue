@@ -47,24 +47,23 @@
           </a-select>
         </a-form-item>
         <a-form-item label="始发站">
-          <a-input v-model:value="formState.start"/>
+          <selectStationInput :treeData = 'metaList' @getStationStartInfo="getStationStartInfo"/>
         </a-form-item>
         <a-form-item label="始发站拼音">
-          <a-input v-model:value="formState.startPinyin"/>
+          <a-input v-model:value="formState.startPinyin" disabled/>
         </a-form-item>
         <a-form-item label="出发时间">
-          <a-time-picker v-model:value="timeTemp.startTime" format="HH:mm:ss"/>
+          <a-time-picker v-model:value="timeTemp.startTime" format="HH:mm:ss" placeholder="选择出发时间"/>
         </a-form-item>
         <a-form-item label="终点站">
-          <a-input v-model:value="formState.end"/>
+          <selectStationInput :treeData = 'metaList' @getStationEndInfo="getStationEndInfo"/>
         </a-form-item>
         <a-form-item label="终点站拼音">
-          <a-input v-model:value="formState.endPinyin"/>
+          <a-input v-model:value="formState.endPinyin" disabled/>
         </a-form-item>
         <a-form-item label="到站时间">
-          <a-time-picker v-model:value="timeTemp.endTime" format="HH:mm:ss"/>
+          <a-time-picker v-model:value="timeTemp.endTime" format="HH:mm:ss" placeholder="选择到站时间"/>
         </a-form-item>
-        <selectStationInput :treeData = 'metaList'/>
       </a-form>
     </a-modal>
   </div>
@@ -279,27 +278,23 @@ const add = () => {
   // 校验参数是否合法 todo
   // 将会员id传入
   formState.memberId = store.state.member.id
+  // resetFormState()
+  // formState = {...initialFormState}
   // 格式化时间为后端所需格式
   formState.startTime = dayjs(timeTemp.startTime).locale('zh-cn').format('HH:mm:ss');
   formState.endTime= dayjs(timeTemp.endTime).locale('zh-cn').format('HH:mm:ss');
-
-
-  // 打印格式化后的时间以进行调试
-  console.log("newStartTime:", formState.startTime);
-  console.log("newEndTime:", formState.endTime);
-
   console.log("formState:", formState)
   // 调用保存接口
-  myAxios.post("/business/train/save", formState).then(resp => {
-    if (resp.data.code === 0) {
-      message.success("新增火车信息成功")
-      fetchData()
-      addState.value = false
-      resetFormState()
-    } else {
-      message.warn(resp.data.message)
-    }
-  })
+  // myAxios.post("/business/train/save", formState).then(resp => {
+  //   if (resp.data.code === 0) {
+  //     message.success("新增火车信息成功")
+  //     fetchData()
+  //     addState.value = false
+  //     resetFormState()
+  //   } else {
+  //     message.warn(resp.data.message)
+  //   }
+  // })
 }
 
 // 展示新增或修改菜单
@@ -337,6 +332,14 @@ const getStationMeta = ()=> {
       message.warn("网络繁忙，请稍后再试！")
     }
   })
+}
+// --------------------------触发器------------------------------
+const getStationStartInfo = (data)=> {
+  formState.start = data
+}
+const getStationEndInfo = (data) => {
+  console.log("wochufale")
+  formState.end = data
 }
 </script>
 
