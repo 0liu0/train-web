@@ -58,8 +58,6 @@ watch(value, (newValue, oldValue) => {
   if (newValue !== oldValue) {
     emit('getStationStartInfo', newValue);
     emit('getStationEndInfo', newValue);
-    // 重置 searchValue
-    searchValue.value = '';
   }
 });
 let searchValue = ref('');
