@@ -7,7 +7,7 @@
     >
       <a-menu-item key="1" @click="navigateTo('/content/member-center')">
         <FundOutlined :style="{fontSize: '18px',color:'#08c'}"/>
-        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp会员中心</span>
+        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp我的乘车人</span>
       </a-menu-item>
     </a-menu>
   </a-layout-sider>

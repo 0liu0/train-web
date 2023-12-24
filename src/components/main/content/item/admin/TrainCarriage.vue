@@ -1,7 +1,7 @@
 <template>
   <a-button style="float: left;margin: -10px 0 20px 40px" @click="showAddPsgModal">新增</a-button>
   <!-- 用户列表主体部分 -->
-  <a-table style="padding: 0 20px" :columns="columns" :data-source="passengerList" :pagination="pagination"
+  <a-table style="padding: 0 20px" :columns="columns" :data-source="list" :pagination="pagination"
            @change="handleTableChange">
     <template #headerCell="{ column }">
       <template v-if="column.key === 'trainCode'">
@@ -18,6 +18,11 @@
           {{ record.trainCode }}
         </a>
       </template>
+      <template v-if="column.key === 'seatType'">
+        <span>
+            {{ getSeatType(record.seatType) }}
+        </span>
+      </template>
       <template v-else-if="column.key === 'action'">
         <span>
           <a-button class="btn" type="primary" @click="showUpdPsgModal(record.id)">修改</a-button>
@@ -31,52 +36,62 @@
     </template>
   </a-table>
   <!-- 弹窗 -->
-  <!-- 新建乘客弹窗 -->
+  <!-- 新建车厢信息弹窗 -->
   <div>
     <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addPassenger">
-      <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="addFormState.trainCode"/>
+          <selectStationInput :treeData = 'metaList' @getTrainCodeInfo="getTrainCodeInfo"/>
         </a-form-item>
         <a-form-item label="厢号">
-          <a-input v-model:value="addFormState.carriageIndex"/>
+          <a-input v-model:value="formState.carriageIndex"/>
         </a-form-item>
         <a-form-item label="座位类型">
-          <a-input v-model:value="addFormState.seatType"/>
-        </a-form-item>
-        <a-form-item label="座位数">
-          <a-input v-model:value="addFormState.seatCount"/>
+          <a-select v-model:value="formState.seatType" style="width: 100%">
+            <a-select-option value="1">一等座</a-select-option>
+            <a-select-option value="2">二等座</a-select-option>
+            <a-select-option value="3">软卧</a-select-option>
+            <a-select-option value="4">硬卧</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="排数">
-          <a-input v-model:value="addFormState.rowCount"/>
+          <a-input v-model:value="formState.rowCount"/>
+        </a-form-item>
+        <a-form-item label="座位数">
+          <a-input v-model:value="formState.seatCount" disabled/>
         </a-form-item>
         <a-form-item label="列数">
-          <a-input v-model:value="addFormState.colCount"/>
+          <a-input v-model:value="formState.colCount" disabled/>
         </a-form-item>
       </a-form>
     </a-modal>
   </div>
-  <!-- 修改乘客信息弹窗 -->
+  <!-- 修改车厢信息弹窗 -->
   <div>
     <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改乘客信息" @ok="updPassengerInfo">
-      <a-form :model="curPassengerInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form :model="curCarriageInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="curPassengerInfo.trainCode"/>
+          <a-input v-model:value="curCarriageInfo.trainCode" disabled/>
         </a-form-item>
         <a-form-item label="厢号">
-          <a-input v-model:value="curPassengerInfo.carriageIndex"/>
+          <a-input v-model:value="curCarriageInfo.carriageIndex"/>
         </a-form-item>
         <a-form-item label="座位类型">
-          <a-input v-model:value="curPassengerInfo.seatType"/>
-        </a-form-item>
-        <a-form-item label="座位数">
-          <a-input v-model:value="curPassengerInfo.seatCount"/>
+          <a-select v-model:value="curCarriageInfo.seatType" style="width: 100%">
+            <a-select-option value="1">一等座</a-select-option>
+            <a-select-option value="2">二等座</a-select-option>
+            <a-select-option value="3">软卧</a-select-option>
+            <a-select-option value="4">硬卧</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="排数">
-          <a-input v-model:value="curPassengerInfo.rowCount"/>
+          <a-input v-model:value="curCarriageInfo.rowCount"/>
+        </a-form-item>
+        <a-form-item label="座位数">
+          <a-input v-model:value="curCarriageInfo.seatCount" disabled/>
         </a-form-item>
         <a-form-item label="列数">
-          <a-input v-model:value="curPassengerInfo.colCount"/>
+          <a-input v-model:value="curCarriageInfo.colCount" disabled/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -84,10 +99,13 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
 import store from "@/store";
+import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
+import SelectStationInput from "@/components/main/content/item/components/SelectStationInput.vue";
+import {pinyin} from "pinyin-pro";
 
 let curPassengerId = ref(0);
 let addPsgState = ref(false)
@@ -132,7 +150,7 @@ const labelCol = {
 const wrapperCol = {
   span: 14,
 };
-const passengerList = ref([
+const list = ref([
   {
     id: '1',
     trainCode: '2',
@@ -153,14 +171,14 @@ const initialFormState = {
   colCount: ''
 };
 
-const addFormState = reactive({ ...initialFormState });
+const formState = reactive({ ...initialFormState });
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
   Object.keys(initialFormState).forEach(key => {
-    addFormState[key] = initialFormState[key];
+    formState[key] = initialFormState[key];
   });
 }
-let curPassengerInfo = reactive({
+let curCarriageInfo = reactive({
   id: '',
   trainCode: '',
   carriageIndex: '',
@@ -176,9 +194,19 @@ const pagination = reactive({
   total: 0 // 总记录数
 })
 onMounted(() => {
+  getTrainCodeMeta()
   fetchData()
 })
-
+const getSeatType = (type) => {
+  const typeMap = {
+    '1': '一等座',
+    '2': '二等座',
+    '3': '软卧',
+    '4': '硬卧'
+  };
+  return typeMap[type] || '未知';
+}
+const metaList = ref([]);
 // ----------------------------------------
 const fetchData = () => {
   myAxios.post("/business/train_carriage/query", {
@@ -187,9 +215,9 @@ const fetchData = () => {
   }).then(resp => {
     if (resp.data.code === 0) {
       if (resp.data.content===null) {
-        passengerList.value = null
+        list.value = null
       } else {
-        passengerList.value = resp.data.content.list;
+        list.value = resp.data.content.list;
         pagination.total = parseInt(resp.data.content.total);
       }
     } else {
@@ -199,7 +227,6 @@ const fetchData = () => {
 }
 // 分页相关操作
 const handleTableChange = (newPagination) => {
-  console.log("Changing page to", newPagination.current);
   // 更新当前页数
   pagination.current = newPagination.current;
   // 可选: 更新页面大小
@@ -209,7 +236,7 @@ const handleTableChange = (newPagination) => {
 }
 // 执行对乘客的一些基本操作
 const updPassengerInfo = () => {
-  myAxios.post("/business/train_carriage/update",curPassengerInfo).then(resp => {
+  myAxios.post("/business/train_carriage/update",curCarriageInfo).then(resp => {
     if (resp.data.code === 0) {
       message.success("修改乘客信息成功")
       fetchData()
@@ -234,11 +261,11 @@ const deletePassenger = (id) => {
 const addPassenger = () => {
   // 校验参数是否合法 todo
   // 将会员id传入
-  addFormState.memberId = store.state.member.id
+  formState.memberId = store.state.member.id
   // 保存至数据库
-  myAxios.post("/business/train_carriage/save", addFormState).then(resp => {
+  myAxios.post("/business/train_carriage/save", formState).then(resp => {
     if (resp.data.code === 0) {
-      message.success("新增乘客成功")
+      message.success("新增车厢信息成功")
       fetchData()
       addPsgState.value = false
       resetFormState()
@@ -259,19 +286,69 @@ const showUpdPsgModal = (id) => {
   myAxios.get(`/business/train_carriage/get/${id}`).then(resp => {
     if (resp.data.code === 0) {
       const info = resp.data.content;
-      curPassengerInfo.id = info.id;
-      curPassengerInfo.trainCode = info.trainCode;
-      curPassengerInfo.carriageIndex = info.carriageIndex;
-      curPassengerInfo.seatType = info.seatType;
-      curPassengerInfo.seatCount = info.seatCount;
-      curPassengerInfo.rowCount = info.rowCount;
-      curPassengerInfo.colCount = info.colCount;
+      curCarriageInfo.id = info.id;
+      curCarriageInfo.trainCode = info.trainCode;
+      curCarriageInfo.carriageIndex = info.carriageIndex;
+      curCarriageInfo.seatType = info.seatType;
+      curCarriageInfo.seatCount = info.seatCount;
+      curCarriageInfo.rowCount = info.rowCount;
+      curCarriageInfo.colCount = info.colCount;
     } else {
       message.warn("网络繁忙，请稍后再试！");
     }
   });
 }
-
+// 得到火车编号的集合
+const getTrainCodeMeta = () => {
+  myAxios.get(`/business/train/get/train_codes`).then(resp => {
+    if (resp.data.code === 0) {
+      metaList.value = resp.data.content
+    } else {
+      message.warn("网络繁忙，请稍后再试！");
+    }
+  });
+}
+// ---------------------------------------------------------------------------
+const getTrainCodeInfo = (data) => {
+  formState.trainCode = data
+}
+// ---------------------------------------------------------------------------计算属性
+formState.seatCount = computed({
+  get() {
+    return formState.rowCount * formState.colCount;
+  }, set(v) {
+  }
+})
+formState.colCount = computed({
+  get() {
+    if (formState.seatType === '1' || formState.seatType === '3') {
+      return 4;
+    } else if (formState.seatType === '2' || formState.seatType === '4') {
+      return 6;
+    } else {
+      return 0;
+    }
+  }, set(v) {
+  }
+})
+curCarriageInfo.seatCount = computed({
+  get() {
+    return curCarriageInfo.rowCount * curCarriageInfo.colCount;
+  }, set(v) {
+  }
+})
+curCarriageInfo.colCount = computed({
+  get() {
+    if (curCarriageInfo.seatType === '1' || curCarriageInfo.seatType === '3') {
+      return 4;
+    } else if (curCarriageInfo.seatType === '2' || curCarriageInfo.seatType === '4') {
+      return 6;
+    } else {
+      return 0;
+    }
+  }, set(v) {
+  }
+})
 </script>
 
 <style scoped>

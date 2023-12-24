@@ -1,6 +1,6 @@
 <template>
   <a-layout-footer style="text-align: center">
-    Ant Design ©2018 Created by Ant UED
+    帅帅的贩票系统，投诉方式->QQ：706716852
   </a-layout-footer>
 </template>
 
