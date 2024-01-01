@@ -48,13 +48,15 @@
           <a-input v-model:value="addFormState.namePinyin"/>
         </a-form-item>
         <a-form-item label="进站时间">
+          <a-time-picker v-model:value="timeTemp.inTime" format="HH:mm:ss" placeholder="选择进站时间"/>
           <a-input v-model:value="addFormState.inTime"/>
         </a-form-item>
-        <a-form-item label="出战时间">
+        <a-form-item label="出站时间">
+          <a-time-picker v-model:value="timeTemp.outTime" format="HH:mm:ss" placeholder="选择出战时间"/>
           <a-input v-model:value="addFormState.outTime"/>
         </a-form-item>
         <a-form-item label="停站时常">
-          <a-input v-model:value="addFormState.stopTime"/>
+          <a-input v-model:value="timeTemp.stopTime"/>
         </a-form-item>
         <a-form-item label="里程">
           <a-input v-model:value="addFormState.km"/>
@@ -96,10 +98,11 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
 import store from "@/store";
+import dayjs from "dayjs";
 
 let curPassengerId = ref(0);
 let addPsgState = ref(false)
@@ -163,7 +166,11 @@ const initialFormState = {
   stopTime: '',
   km: ''
 };
-
+const timeTemp = reactive({
+  inTime:'',
+  outTime:'',
+  stopTime:''
+})
 const addFormState = reactive({...initialFormState});
 
 // 每次用完都要重制当前的默认错参数
@@ -240,6 +247,10 @@ const addPassenger = () => {
   // 校验参数是否合法 todo
   // 将会员id传入
   addFormState.memberId = store.state.member.id
+  // 格式化时间为后端所需格式
+  addFormState.inTime = dayjs(timeTemp.inTime).locale('zh-cn').format('HH:mm:ss');
+  addFormState.endTime= dayjs(timeTemp.outTime).locale('zh-cn').format('HH:mm:ss');
+  addFormState.stopTime= dayjs(timeTemp.stopTime).locale('zh-cn').format('HH:mm:ss');
   // 保存至数据库
   myAxios.post("/business/trainStation_station/save", addFormState).then(resp => {
     if (resp.data.code === 0) {
@@ -278,7 +289,16 @@ const showUpdPsgModal = (id) => {
     }
   });
 }
-
+// ===================================watch
+// 自动计算停车时长
+watch(() => timeTemp.inTime,()=> {
+  let diff = dayjs(timeTemp.outTime, 'HH:mm:ss').diff(dayjs(timeTemp.inTime,'HH:mm:ss'), 'seconds');
+  timeTemp.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss');
+},{immediate: true})
+watch(() => timeTemp.outTime,()=> {
+  let diff = dayjs(timeTemp.outTime, 'HH:mm:ss').diff(dayjs(timeTemp.inTime, 'HH:mm:ss'), 'seconds');
+  timeTemp.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss');
+}, {immediate: true})
 </script>
 
 <style scoped>
