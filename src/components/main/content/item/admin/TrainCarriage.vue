@@ -103,8 +103,8 @@ import {computed, onMounted, reactive, ref} from "vue";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
 import store from "@/store";
-import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
-import SelectStationInput from "@/components/main/content/item/components/SelectStationInput.vue";
+import SelectTrainCodeInput from "@/components/main/content/item/components/SelectStationInput.vue";
+import SelectStationInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
 import {pinyin} from "pinyin-pro";
 
 let curPassengerId = ref(0);

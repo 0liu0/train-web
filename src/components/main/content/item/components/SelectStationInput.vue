@@ -37,7 +37,7 @@
 import {ref, watch} from 'vue';
 
 const props = defineProps(['treeData'])
-const emit = defineEmits(['getTrainCodeInfo'])
+const emit = defineEmits(['getStationStartInfo', 'getStationEndInfo'])
 const value = ref();
 // const treeData = ref([
 //   {
@@ -56,7 +56,8 @@ const value = ref();
 // ]);
 watch(value, (newValue, oldValue) => {
   if (newValue !== oldValue) {
-    emit('getTrainCodeInfo', newValue);
+    emit('getStationStartInfo', newValue);
+    emit('getStationEndInfo', newValue);
   }
 });
 let searchValue = ref('');
