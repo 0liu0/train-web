@@ -36,7 +36,7 @@
     <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增火车车站信息" @ok="addFormState">
       <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <selectStationInput :treeData='metaList' @getTrainCodeInfo="getTrainCodeInfo"/>
+          <SelectTrainCodeInput :treeData='metaList' @getTrainCodeInfo="getTrainCodeInfo"/>
         </a-form-item>
         <a-form-item label="站序">
           <a-input v-model:value="formState.stationIndex"/>
@@ -67,7 +67,7 @@
     <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改火车车站信息" @ok="updateForm">
       <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="formState.trainCode"/>
+          <a-input v-model:value="formState.trainCode" disabled/>
         </a-form-item>
         <a-form-item label="站序">
           <a-input v-model:value="formState.stationIndex"/>
@@ -101,7 +101,7 @@ import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
 import store from "@/store";
 import dayjs from "dayjs";
-import SelectStationInput from "@/components/main/content/item/components/SelectStationInput.vue";
+import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
 import {pinyin} from "pinyin-pro";
 
 let curPassengerId = ref(0);
@@ -271,8 +271,8 @@ const addFormState = () => {
 
 // 展示新增或修改菜单
 const showAddPsgModal = () => {
+  resetFormState()
   addPsgState.value = true
-  formState = {...initialFormState}
 }
 const showUpdPsgModal = (id) => {
   curPassengerId.value = id;
