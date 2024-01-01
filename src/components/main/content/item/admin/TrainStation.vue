@@ -21,7 +21,7 @@
       <template v-else-if="column.key === 'action'">
         <span>
           <a-button class="btn" type="primary" @click="showUpdPsgModal(record.id)">修改</a-button>
-          <a-popconfirm title="确定要删除此数据吗？" @confirm="deletePassenger(record.id)" okText="确认"
+          <a-popconfirm title="确定要删除此数据吗？" @confirm="updateInfo(record.id)" okText="确认"
                         cancel-text="取消">
             <template #icon><question-circle-outlined style="color: red"/></template>
             <a-button class="btn" type="primary" danger>删除</a-button>
@@ -33,64 +33,62 @@
   <!-- 弹窗 -->
   <!-- 新建乘客弹窗 -->
   <div>
-    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addPassenger">
-      <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addFormState">
+      <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="addFormState.trainCode"/>
+          <a-input v-model:value="formState.trainCode"/>
         </a-form-item>
         <a-form-item label="站序">
-          <a-input v-model:value="addFormState.stationIndex"/>
+          <a-input v-model:value="formState.stationIndex"/>
         </a-form-item>
         <a-form-item label="站名">
-          <a-input v-model:value="addFormState.name"/>
+          <a-input v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item label="站名拼音">
-          <a-input v-model:value="addFormState.namePinyin"/>
+          <a-input v-model:value="formState.namePinyin"/>
         </a-form-item>
         <a-form-item label="进站时间">
           <a-time-picker v-model:value="timeTemp.inTime" format="HH:mm:ss" placeholder="选择进站时间"/>
-          <a-input v-model:value="addFormState.inTime"/>
         </a-form-item>
         <a-form-item label="出站时间">
           <a-time-picker v-model:value="timeTemp.outTime" format="HH:mm:ss" placeholder="选择出战时间"/>
-          <a-input v-model:value="addFormState.outTime"/>
         </a-form-item>
         <a-form-item label="停站时常">
           <a-input v-model:value="timeTemp.stopTime"/>
         </a-form-item>
         <a-form-item label="里程">
-          <a-input v-model:value="addFormState.km"/>
+          <a-input v-model:value="formState.km"/>
         </a-form-item>
       </a-form>
     </a-modal>
   </div>
   <!-- 修改乘客信息弹窗 -->
   <div>
-    <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改乘客信息" @ok="updPassengerInfo">
-      <a-form :model="curPassengerInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改乘客信息" @ok="updateForm">
+      <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="curPassengerInfo.trainCode"/>
+          <a-input v-model:value="formState.trainCode"/>
         </a-form-item>
         <a-form-item label="站序">
-          <a-input v-model:value="curPassengerInfo.stationIndex"/>
+          <a-input v-model:value="formState.stationIndex"/>
         </a-form-item>
         <a-form-item label="站名">
-          <a-input v-model:value="curPassengerInfo.name"/>
+          <a-input v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item label="站名拼音">
-          <a-input v-model:value="curPassengerInfo.namePinyin"/>
+          <a-input v-model:value="formState.namePinyin"/>
         </a-form-item>
         <a-form-item label="进站时间">
-          <a-input v-model:value="curPassengerInfo.inTime"/>
+          <a-time-picker v-model:value="timeTemp.inTime" format="HH:mm:ss" placeholder="选择进站时间"/>
         </a-form-item>
-        <a-form-item label="出战时间">
-          <a-input v-model:value="curPassengerInfo.outTime"/>
+        <a-form-item label="出站时间">
+          <a-time-picker v-model:value="timeTemp.outTime" format="HH:mm:ss" placeholder="选择出战时间"/>
         </a-form-item>
         <a-form-item label="停站时常">
-          <a-input v-model:value="curPassengerInfo.stopTime"/>
+          <a-input v-model:value="timeTemp.stopTime"/>
         </a-form-item>
         <a-form-item label="里程">
-          <a-input v-model:value="curPassengerInfo.km"/>
+          <a-input v-model:value="formState.km"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -171,16 +169,15 @@ const timeTemp = reactive({
   outTime:'',
   stopTime:''
 })
-const addFormState = reactive({...initialFormState});
+const formState = reactive({...initialFormState});
 
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
   Object.keys(initialFormState).forEach(key => {
-    addFormState[key] = initialFormState[key];
+    formState[key] = initialFormState[key];
   });
 }
 
-let curPassengerInfo = reactive({...initialFormState});
 
 const pagination = reactive({
   current: 1, // 当前页数
@@ -220,8 +217,12 @@ const handleTableChange = (newPagination) => {
   fetchData();
 }
 // 执行对乘客的一些基本操作
-const updPassengerInfo = () => {
-  myAxios.post("/business/trainStation_station/update", curPassengerInfo).then(resp => {
+const updateForm = () => {
+  // 格式化时间为后端所需格式
+  formState.inTime = dayjs(timeTemp.inTime).locale('zh-cn').format('HH:mm:ss');
+  formState.endTime= dayjs(timeTemp.outTime).locale('zh-cn').format('HH:mm:ss');
+  formState.stopTime= dayjs(timeTemp.stopTime).locale('zh-cn').format('HH:mm:ss');
+  myAxios.post("/business/trainStation_station/update", formState).then(resp => {
     if (resp.data.code === 0) {
       message.success("修改乘客信息成功")
       fetchData()
@@ -232,7 +233,7 @@ const updPassengerInfo = () => {
   })
 }
 
-const deletePassenger = (id) => {
+const updateInfo = (id) => {
   myAxios.get(`/business/trainStation_station/delete/${id}`).then(resp => {
     if (resp.data.code === 0) {
       message.success("删除成功！")
@@ -243,16 +244,16 @@ const deletePassenger = (id) => {
   })
 }
 
-const addPassenger = () => {
+const addFormState = () => {
   // 校验参数是否合法 todo
   // 将会员id传入
-  addFormState.memberId = store.state.member.id
+  formState.memberId = store.state.member.id
   // 格式化时间为后端所需格式
-  addFormState.inTime = dayjs(timeTemp.inTime).locale('zh-cn').format('HH:mm:ss');
-  addFormState.endTime= dayjs(timeTemp.outTime).locale('zh-cn').format('HH:mm:ss');
-  addFormState.stopTime= dayjs(timeTemp.stopTime).locale('zh-cn').format('HH:mm:ss');
+  formState.inTime = dayjs(timeTemp.inTime).locale('zh-cn').format('HH:mm:ss');
+  formState.endTime= dayjs(timeTemp.outTime).locale('zh-cn').format('HH:mm:ss');
+  formState.stopTime= dayjs(timeTemp.stopTime).locale('zh-cn').format('HH:mm:ss');
   // 保存至数据库
-  myAxios.post("/business/trainStation_station/save", addFormState).then(resp => {
+  myAxios.post("/business/trainStation_station/save", formState).then(resp => {
     if (resp.data.code === 0) {
       message.success("新增乘客成功")
       fetchData()
@@ -275,15 +276,15 @@ const showUpdPsgModal = (id) => {
   myAxios.get(`/business/trainStation_station/get/${id}`).then(resp => {
     if (resp.data.code === 0) {
       const info = resp.data.content;
-      curPassengerInfo.id = info.id;
-      curPassengerInfo.trainCode = info.trainCode;
-      curPassengerInfo.stationIndex = info.stationIndex;
-      curPassengerInfo.name = info.name;
-      curPassengerInfo.namePinyin = info.namePinyin;
-      curPassengerInfo.inTime = info.inTime;
-      curPassengerInfo.outTime = info.outTime;
-      curPassengerInfo.stopTime = info.stopTime;
-      curPassengerInfo.km = info.km;
+      formState.id = info.id;
+      formState.trainCode = info.trainCode;
+      formState.stationIndex = info.stationIndex;
+      formState.name = info.name;
+      formState.namePinyin = info.namePinyin;
+      formState.inTime = info.inTime;
+      formState.outTime = info.outTime;
+      formState.stopTime = info.stopTime;
+      formState.km = info.km;
     } else {
       message.warn("网络繁忙，请稍后再试！");
     }
