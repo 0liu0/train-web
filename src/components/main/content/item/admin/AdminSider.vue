@@ -39,7 +39,7 @@ import router from "@/router";
 import {onMounted, ref} from "vue";
 
 const selectedKey = ref(['1']);
-const arr = ['/admin/station-manage', '/admin/train-manage', '/admin/train-carriage', '/admin/train-seat', '/admin/train-station']
+const arr = ['/admin/station-manage', '/admin/train-manage', '/admin/train-carriage', '/admin/train-seat', '/admin/train-station', '/admin/job-task']
 // 初始化时从localStorage读取selectedKey
 onMounted(() => {
   const storedSelectedKey = localStorage.getItem("selectedKeyForAdmin");
