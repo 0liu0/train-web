@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import MainView from "@/views/MainView.vue";
 import store from "@/store";
 import {message} from "ant-design-vue";
@@ -50,6 +49,10 @@ const routes = [
             path: 'train-station',
             name: 'train-station',
             component: () => import("../components/main/content/item/admin/TrainStation.vue")
+          },{
+            path: 'job-task',
+            name: 'job-task',
+            component: () => import("../components/main/content/item/admin/JobTask.vue")
           }
         ]
       }

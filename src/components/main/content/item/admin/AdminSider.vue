@@ -25,6 +25,11 @@
         <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
         <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp火车座位</span>
       </a-menu-item>
+      <a-menu-item key="6" @click="navigateTo('/admin/job-task')">
+        <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
+        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp定时任务</span>
+      </a-menu-item>
+
     </a-menu>
   </a-layout-sider>
 </template>
