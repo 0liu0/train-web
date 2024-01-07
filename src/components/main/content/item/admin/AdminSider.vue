@@ -17,13 +17,13 @@
         <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
         <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp火车车厢</span>
       </a-menu-item>
-      <a-menu-item key="4" @click="navigateTo('/admin/train-seat')">
-        <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
-        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp火车座位</span>
-      </a-menu-item>
-      <a-menu-item key="5" @click="navigateTo('/admin/train-station')">
+      <a-menu-item key="4" @click="navigateTo('/admin/train-station')">
         <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
         <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp火车车站</span>
+      </a-menu-item>
+      <a-menu-item key="5" @click="navigateTo('/admin/train-seat')">
+        <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
+        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp火车座位</span>
       </a-menu-item>
     </a-menu>
   </a-layout-sider>

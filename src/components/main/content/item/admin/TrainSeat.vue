@@ -18,10 +18,14 @@
           {{ record.trainCode }}
         </a>
       </template>
+      <template v-if="column.key === 'seatType'">
+        <a>
+          {{ getTrainSeatType(record.seatType) }}
+        </a>
+      </template>
       <template v-else-if="column.key === 'action'">
         <span>
-          <a-button class="btn" type="primary" @click="showUpdPsgModal(record.id)">修改</a-button>
-          <a-popconfirm title="确定要删除此数据吗？" @confirm="deletePassenger(record.id)" okText="确认"
+          <a-popconfirm title="确定要删除此数据吗？" @confirm="deleteSeat(record.id)" okText="确认"
                         cancel-text="取消">
             <template #icon><question-circle-outlined style="color: red"/></template>
             <a-button class="btn" type="primary" danger>删除</a-button>
@@ -31,9 +35,9 @@
     </template>
   </a-table>
   <!-- 弹窗 -->
-  <!-- 新建乘客弹窗 -->
+  <!-- 新建座位弹窗 -->
   <div>
-    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增乘客" @ok="addPassenger">
+    <a-modal cancel-text="取消" ok-text="新增" v-model:open="addPsgState" title="新增座位" @ok="addPassenger">
       <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
           <a-input v-model:value="addFormState.trainCode"/>
@@ -50,15 +54,15 @@
         <a-form-item label="出发时间">
           <a-input v-model:value="addFormState.seatType"/>
         </a-form-item>
-        <a-form-item label="重点站">
+        <a-form-item label="终点站">
           <a-input v-model:value="addFormState.carriageSeatIndex"/>
         </a-form-item>
       </a-form>
     </a-modal>
   </div>
-  <!-- 修改乘客信息弹窗 -->
+  <!-- 修改座位信息弹窗 -->
   <div>
-    <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改乘客信息" @ok="updPassengerInfo">
+    <a-modal cancel-text="取消" ok-text="修改" v-model:open="updPsgState" title="修改座位信息" @ok="updPassengerInfo">
       <a-form :model="curPassengerInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
           <a-input v-model:value="curPassengerInfo.trainCode"/>
@@ -190,11 +194,11 @@ const handleTableChange = (newPagination) => {
   // 重新请求数据
   fetchData();
 }
-// 执行对乘客的一些基本操作
+// 执行对座位的一些基本操作
 const updPassengerInfo = () => {
   myAxios.post("/business/train_seat/update", curPassengerInfo).then(resp => {
     if (resp.data.code === 0) {
-      message.success("修改乘客信息成功")
+      message.success("修改座位信息成功")
       fetchData()
       updPsgState.value = false
     } else {
@@ -203,7 +207,7 @@ const updPassengerInfo = () => {
   })
 }
 
-const deletePassenger = (id) => {
+const deleteSeat = (id) => {
   myAxios.get(`/business/train_seat/delete/${id}`).then(resp => {
     if (resp.data.code === 0) {
       message.success("删除成功！")
@@ -221,7 +225,7 @@ const addPassenger = () => {
   // 保存至数据库
   myAxios.post("/business/train_seat/save", addFormState).then(resp => {
     if (resp.data.code === 0) {
-      message.success("新增乘客成功")
+      message.success("新增座位成功")
       fetchData()
       addPsgState.value = false
       resetFormState()
@@ -253,6 +257,16 @@ const showUpdPsgModal = (id) => {
       message.warn("网络繁忙，请稍后再试！");
     }
   });
+}
+
+const getTrainSeatType = (type) => {
+  const typeMap = {
+    '1': '一等座',
+    '2': '二等座',
+    '3': '软卧',
+    '4': '软卧',
+  };
+  return typeMap[type] || '未知';
 }
 
 </script>

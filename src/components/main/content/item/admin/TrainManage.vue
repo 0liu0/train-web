@@ -27,10 +27,16 @@
       <template v-else-if="column.key === 'action'">
         <span>
           <a-button class="btn" type="primary" @click="showUpdModal(record.id)">修改</a-button>
-          <a-popconfirm title="确定要删除此数据吗？" @confirm="deletePassenger(record.id)" okText="确认"
+          <a-popconfirm title="确定要删除此火车数据吗？" @confirm="deletePassenger(record.id)" okText="确认"
                         cancel-text="取消">
             <template #icon><question-circle-outlined style="color: red"/></template>
             <a-button class="btn" type="primary" danger>删除</a-button>
+          </a-popconfirm>
+          <a-popconfirm title="确定要生成该火车的车位信息吗？若之前生成过则会覆盖！" @confirm="generatorSeat(record.id)"
+                        okText="确认"
+                        cancel-text="取消">
+            <template #icon><question-circle-outlined style="color: blueviolet"/></template>
+            <a-button class="btn" type="primary" >生成座位</a-button>
           </a-popconfirm>
         </span>
       </template>
@@ -52,7 +58,7 @@
           </a-select>
         </a-form-item>
         <a-form-item label="始发站">
-          <selectStationInput :treeData = 'metaList' @getStationStartInfo="getStationStartInfo"/>
+          <selectStationInput :treeData='metaList' @getStationStartInfo="getStationStartInfo"/>
         </a-form-item>
         <a-form-item label="始发站拼音">
           <a-input v-model:value="formState.startPinyin" disabled/>
@@ -61,7 +67,7 @@
           <a-time-picker v-model:value="timeTemp.startTime" format="HH:mm:ss" placeholder="选择出发时间"/>
         </a-form-item>
         <a-form-item label="终点站">
-          <selectStationInput :treeData = 'metaList' @getStationEndInfo="getStationEndInfo"/>
+          <selectStationInput :treeData='metaList' @getStationEndInfo="getStationEndInfo"/>
         </a-form-item>
         <a-form-item label="终点站拼音">
           <a-input v-model:value="formState.endPinyin" disabled/>
@@ -117,6 +123,7 @@ import store from "@/store";
 import {pinyin} from "pinyin-pro";
 import dayjs from "dayjs";
 import SelectStationInput from "@/components/main/content/item/components/SelectStationInput.vue";
+
 dayjs.locale('zh-cn') // 使用本地化语言
 let curId = ref(0);
 let addState = ref(false)
@@ -193,8 +200,8 @@ const initialFormState = {
 };
 
 const timeTemp = reactive({
-  startTime:'',
-  endTime:''
+  startTime: '',
+  endTime: ''
 })
 
 let formState = reactive({...initialFormState});
@@ -202,6 +209,7 @@ onMounted(() => {
   getStationMeta();
   console.log("metaList:" + metaList.value)
 })
+
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
   Object.keys(initialFormState).forEach(key => {
@@ -291,7 +299,7 @@ const add = () => {
   // formState = {...initialFormState}
   // 格式化时间为后端所需格式
   formState.startTime = dayjs(timeTemp.startTime).locale('zh-cn').format('HH:mm:ss');
-  formState.endTime= dayjs(timeTemp.endTime).locale('zh-cn').format('HH:mm:ss');
+  formState.endTime = dayjs(timeTemp.endTime).locale('zh-cn').format('HH:mm:ss');
   console.log("formState:", formState)
   // 调用保存接口
   myAxios.post("/business/train/save", formState).then(resp => {
@@ -333,12 +341,22 @@ const showUpdModal = (id) => {
     }
   });
 }
-const getStationMeta = ()=> {
+const getStationMeta = () => {
   myAxios.get("/business/station/station_label/list").then(resp => {
     if (resp.data.code === 0) {
       metaList.value = resp.data.content;
     } else {
       message.warn("网络繁忙，请稍后再试！")
+    }
+  })
+}
+
+const generatorSeat = (id) => {
+  myAxios.get(`/business/train/gen_seat/${id}`).then(resp => {
+    if (resp.data.code === 0) {
+      message.success("添加火车信息成功！")
+    } else {
+      message.warn(resp.data.message)
     }
   })
 }
@@ -351,7 +369,7 @@ const getTrainType = (type) => {
   return typeMap[type] || '未知';
 }
 // --------------------------触发器------------------------------
-const getStationStartInfo = (data)=> {
+const getStationStartInfo = (data) => {
   formState.start = data
 }
 const getStationEndInfo = (data) => {
