@@ -1,7 +1,7 @@
 <template>
   <p>
     <a-space>
-      <train-select-view v-model="params.trainCode" width="200px"></train-select-view>
+      <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySearch"/>
       <a-button type="primary" @click="handleQuery()">查找</a-button>
     </a-space>
   </p>
@@ -32,9 +32,11 @@
 import { ref, onMounted } from "vue";
 import { notification } from "ant-design-vue";
 import myAxios from "../../../../../../utils/myAxios";
+import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
 const SEAT_COL_ARRAY = window.SEAT_COL_ARRAY;
 const SEAT_TYPE_ARRAY = window.SEAT_TYPE_ARRAY;
 const visible = ref(false);
+const trainCodeMetaList = ref([]);
 let dailyTrainSeat = ref({
   id: undefined,
   date: undefined,
@@ -140,8 +142,21 @@ const handleTableChange = page => {
     size: page.pageSize
   });
 };
-
+const getTrainCodeMeta = () => {
+  myAxios.get(`/business/train/get/train_codes`).then(resp => {
+    if (resp.data.code === 0) {
+      trainCodeMetaList.value = resp.data.content
+    } else {
+      message.warn("网络繁忙，请稍后再试！");
+    }
+  });
+}
+const getTrainCodeInfoBySearch = (data) => {
+  params.value.trainCode = data
+  console.log("getTrainCodeInfo")
+}
 onMounted(() => {
+  getTrainCodeMeta()
   handleQuery({
     page: 1,
     size: pagination.value.pageSize

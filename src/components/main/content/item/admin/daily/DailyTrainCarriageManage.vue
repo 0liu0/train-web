@@ -2,8 +2,8 @@
   <p>
     <a-space>
       <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="请选择日期" />
-      <train-select-view v-model="params.trainCode" width="200px"></train-select-view>
-      <a-button type="primary" @click="handleQuery()">刷新</a-button>
+      <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySearch"/>
+      <a-button type="primary" @click="handleQuery()">查找</a-button>
       <a-button type="primary" @click="onAdd">新增</a-button>
     </a-space>
   </p>
@@ -45,20 +45,19 @@
         />
       </a-form-item>
       <a-form-item label="车次编号">
-        <train-select-view v-model="dailyTrainCarriage.trainCode" width="200px"></train-select-view>
+        <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySave"/>
       </a-form-item>
       <a-form-item label="箱序">
         <a-input v-model:value="dailyTrainCarriage.index" />
       </a-form-item>
       <a-form-item label="座位类型">
-        <a-select v-model:value="dailyTrainCarriage.seatType">
-          <a-select-option
-            v-for="item in SEAT_TYPE_ARRAY"
-            :key="item.code"
-            :value="item.code"
-          >{{item.desc}}</a-select-option>
-        </a-select>
-      </a-form-item>
+          <a-select v-model:value="dailyTrainCarriage.seatType" style="width: 100%">
+            <a-select-option value="1">一等座</a-select-option>
+            <a-select-option value="2">二等座</a-select-option>
+            <a-select-option value="3">软卧</a-select-option>
+            <a-select-option value="4">硬卧</a-select-option>
+          </a-select>
+        </a-form-item>
       <!--<a-form-item label="座位数">-->
       <!--  <a-input v-model:value="dailyTrainCarriage.seatCount" />-->
       <!--</a-form-item>-->
@@ -76,6 +75,7 @@
 import { ref, onMounted } from "vue";
 import { notification } from "ant-design-vue";
 import myAxios from "../../../../../../utils/myAxios";
+import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
 const SEAT_TYPE_ARRAY = window.SEAT_TYPE_ARRAY;
 const visible = ref(false);
 let dailyTrainCarriage = ref({
@@ -91,6 +91,7 @@ let dailyTrainCarriage = ref({
   updateTime: undefined
 });
 const dailyTrainCarriages = ref([]);
+const trainCodeMetaList = ref([]);
 // 分页的三个属性名是固定的
 const pagination = ref({
   total: 0,
@@ -227,8 +228,23 @@ const handleTableChange = pagination => {
     size: pagination.pageSize
   });
 };
-
+const getTrainCodeMeta = () => {
+  myAxios.get(`/business/train/get/train_codes`).then(resp => {
+    if (resp.data.code === 0) {
+      trainCodeMetaList.value = resp.data.content
+    } else {
+      message.warn("网络繁忙，请稍后再试！");
+    }
+  });
+}
+const getTrainCodeInfoBySearch = (data) => {
+  params.value.trainCode = data
+}
+const getTrainCodeInfoBySave = (data) => {
+  dailyTrainCarriage.value.code = data
+}
 onMounted(() => {
+  getTrainCodeMeta()
   handleQuery({
     page: 1,
     size: pagination.value.pageSize

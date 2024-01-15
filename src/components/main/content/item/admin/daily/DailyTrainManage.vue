@@ -318,7 +318,6 @@ const getTrainCodeMeta = () => {
 }
 const getTrainCodeInfoBySearch = (data) => {
   params.value.code = data
-  console.log("getTrainCodeInfo")
 }
 const getTrainCodeInfoBySave = (data) => {
   dailyTrain.value.code = data
