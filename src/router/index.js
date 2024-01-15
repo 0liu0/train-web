@@ -50,10 +50,28 @@ const routes = [
             name: 'train-station',
             component: () => import("../components/main/content/item/admin/TrainStation.vue")
           },{
+            path: 'daily-train-manage',
+            name: 'daily-train-manage',
+            component: () => import("../components/main/content/item/admin/daily/DailyTrainManage.vue")
+          },{
+            path: 'daily-train-seat-manage',
+            name: 'daily-train-seat-manage',
+            component: () => import("../components/main/content/item/admin/daily/DailyTrainSeatManage.vue")
+          },{
+            path: 'daily-train-station-manage',
+            name: 'daily-train-station-manage',
+            component: () => import("../components/main/content/item/admin/daily/DailyTrainStationManage.vue")
+          },{
+            path: 'daily-train-carriage-manage',
+            name: 'daily-train-carriage-manage',
+            component: () => import("../components/main/content/item/admin/daily/DailyTrainCarriageManage.vue")
+          },{
             path: 'job-task',
             name: 'job-task',
             component: () => import("../components/main/content/item/admin/JobTask.vue")
           }
+
+
         ]
       }
     ]
