@@ -48,15 +48,13 @@
       <a-form-item label="车次编号">
         <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySave"/>
       </a-form-item>
-      <a-form-item label="车次类型">
-        <a-select v-model:value="dailyTrain.type">
-          <a-select-option
-            v-for="item in TRAIN_TYPE_ARRAY"
-            :key="item.code"
-            :value="item.code"
-          >{{item.desc}}</a-select-option>
-        </a-select>
-      </a-form-item>
+        <a-form-item label="车次类型">
+          <a-select v-model:value="dailyTrain.type" style="width: 100%">
+            <a-select-option value="G">高铁</a-select-option>
+            <a-select-option value="D">动车</a-select-option>
+            <a-select-option value="K">快速</a-select-option>
+          </a-select>
+        </a-form-item>
       <a-form-item label="始发站">
         <a-input v-model:value="dailyTrain.start" />
       </a-form-item>

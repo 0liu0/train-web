@@ -7,7 +7,7 @@
         :treeData="trainCodeMetaList"
         @getTrainCodeInfo="getTrainCodeInfoBySearch"
       />
-      <a-button type="primary" @click="handleQuery()">刷新</a-button>
+      <a-button type="primary" @click="handleQuery()">查找</a-button>
       <a-button type="primary" @click="onAdd">新增</a-button>
     </a-space>
   </p>
@@ -313,11 +313,10 @@ const getTrainCodeMeta = () => {
   });
 }
 const getTrainCodeInfoBySearch = (data) => {
-  params.value.code = data
-  console.log("getTrainCodeInfo")
+  params.value.trainCode = data
 }
 const getTrainCodeInfoBySave = (data) => {
-  dailyTrain.value.code = data
+  dailyTrainStation.value.trainCode = data
 }
 onMounted(() => {
   getTrainCodeMeta()

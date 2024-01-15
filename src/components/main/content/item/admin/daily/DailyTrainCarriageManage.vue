@@ -29,8 +29,8 @@
         </a-space>
       </template>
       <template v-else-if="column.dataIndex === 'seatType'">
-        <span v-for="item in SEAT_TYPE_ARRAY" :key="item.code">
-          <span v-if="item.code === record.seatType">{{item.desc}}</span>
+        <span>
+            {{ getSeatType(record.seatType) }}
         </span>
       </template>
     </template>
@@ -144,7 +144,15 @@ const columns = [
     dataIndex: "operation"
   }
 ];
-
+const getSeatType = (type) => {
+  const typeMap = {
+    '1': '一等座',
+    '2': '二等座',
+    '3': '软卧',
+    '4': '硬卧'
+  };
+  return typeMap[type] || '未知';
+}
 const onAdd = () => {
   dailyTrainCarriage.value = {};
   visible.value = true;
@@ -241,7 +249,7 @@ const getTrainCodeInfoBySearch = (data) => {
   params.value.trainCode = data
 }
 const getTrainCodeInfoBySave = (data) => {
-  dailyTrainCarriage.value.code = data
+  dailyTrainCarriage.value.trainCode = data
 }
 onMounted(() => {
   getTrainCodeMeta()
