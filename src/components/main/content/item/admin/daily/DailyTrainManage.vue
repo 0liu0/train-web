@@ -2,10 +2,10 @@
   <p>
     <a-space>
       <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="请选择日期" />
-      <train-select-view v-model="params.code" width="200px"></train-select-view>
-      <a-button type="primary" @click="handleQuery()">刷新</a-button>
+      <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySearch"/>
+      <a-button type="primary" @click="handleQuery()">查找</a-button>
       <a-button type="primary" @click="onAdd">新增</a-button>
-      <a-button type="danger" @click="onClickGenDaily">手动生成车次信息</a-button>
+      <a-button type="primary" danger @click="onClickGenDaily">手动生成车次信息</a-button>
     </a-space>
   </p>
   <a-table
@@ -46,7 +46,7 @@
         />
       </a-form-item>
       <a-form-item label="车次编号">
-        <train-select-view v-model="dailyTrain.code" @change="onChangeCode"></train-select-view>
+        <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySave"/>
       </a-form-item>
       <a-form-item label="车次类型">
         <a-select v-model:value="dailyTrain.type">
@@ -106,6 +106,7 @@ import {ref, onMounted } from "vue";
 import { notification } from "ant-design-vue";
 import dayjs from "dayjs";
 import myAxios from "../../../../../../utils/myAxios";
+import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
 const TRAIN_TYPE_ARRAY = window.TRAIN_TYPE_ARRAY;
 const visible = ref(false);
 let dailyTrain = ref({
@@ -138,6 +139,8 @@ const genDaily = ref({
 });
 const genDailyVisible = ref(false);
 const genDailyLoading = ref(false);
+const trainCodeMetaList = ref([]);
+const StationMetaList = ref([]);
 const columns = [
   {
     title: "日期",
@@ -304,8 +307,24 @@ const handleGenDailyOk = () => {
     }
   });
 };
-
+const getTrainCodeMeta = () => {
+  myAxios.get(`/business/train/get/train_codes`).then(resp => {
+    if (resp.data.code === 0) {
+      trainCodeMetaList.value = resp.data.content
+    } else {
+      message.warn("网络繁忙，请稍后再试！");
+    }
+  });
+}
+const getTrainCodeInfoBySearch = (data) => {
+  params.value.code = data
+  console.log("getTrainCodeInfo")
+}
+const getTrainCodeInfoBySave = (data) => {
+  dailyTrain.value.code = data
+}
 onMounted(() => {
+  getTrainCodeMeta()
   handleQuery({
     page: 1,
     size: pagination.value.pageSize
