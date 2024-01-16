@@ -48,7 +48,7 @@
         <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySave"/>
       </a-form-item>
       <a-form-item label="箱序">
-        <a-input v-model:value="dailyTrainCarriage.index" />
+        <a-input v-model:value="dailyTrainCarriage.carriageIndex" />
       </a-form-item>
       <a-form-item label="座位类型">
           <a-select v-model:value="dailyTrainCarriage.seatType" style="width: 100%">
@@ -82,7 +82,7 @@ let dailyTrainCarriage = ref({
   id: undefined,
   date: undefined,
   trainCode: undefined,
-  index: undefined,
+  carriageIndex: undefined,
   seatType: undefined,
   seatCount: undefined,
   rowCount: undefined,
@@ -116,8 +116,8 @@ const columns = [
   },
   {
     title: "箱序",
-    dataIndex: "index",
-    key: "index"
+    dataIndex: "carriageIndex",
+    key: "carriageIndex"
   },
   {
     title: "座位类型",

@@ -51,7 +51,7 @@
         />
       </a-form-item>
       <a-form-item label="站序">
-        <a-input v-model:value="dailyTrainStation.index" />
+        <a-input v-model:value="dailyTrainStation.stationIndex" />
       </a-form-item>
       <a-form-item label="站名">
         <a-input v-model:value="dailyTrainStation.name" />
@@ -102,7 +102,7 @@ let dailyTrainStation = ref({
   id: undefined,
   date: undefined,
   trainCode: undefined,
-  index: undefined,
+  stationIndex: undefined,
   name: undefined,
   namePinyin: undefined,
   inTime: undefined,
@@ -137,8 +137,8 @@ const columns = [
   },
   {
     title: "站序",
-    dataIndex: "index",
-    key: "index"
+    dataIndex: "stationIndex",
+    key: "stationIndex"
   },
   {
     title: "站名",
