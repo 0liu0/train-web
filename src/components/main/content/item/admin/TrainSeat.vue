@@ -1,5 +1,15 @@
 <template>
-  <a-button style="float: left;margin: -10px 0 20px 40px" @click="showAddPsgModal">新增</a-button>
+  <div style="float: left;margin: -10px 0 20px 40px">
+    <SelectTrainCodeInput
+      style="width:250px"
+      :treeData="trainCodeMetaList"
+      @getTrainCodeInfo="getTrainCodeInfoBySearch"
+    />
+    <a-button type="primary" @click="fetchData()" style="margin-left:20px">查找</a-button>
+    <a-button type="primary" @click="showAddPsgModal" style="margin-left:20px">新增</a-button>
+  </div>
+
+  <!-- <a-button style="float: left;margin: -10px 0 20px 40px" @click="showAddPsgModal">新增</a-button> -->
   <!-- 用户列表主体部分 -->
   <a-table
     style="padding: 0 20px"
@@ -111,10 +121,12 @@ import { onMounted, reactive, ref } from "vue";
 import myAxios from "@/utils/myAxios";
 import { message } from "ant-design-vue";
 import store from "@/store";
+import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
 
 let curPassengerId = ref(0);
 let addPsgState = ref(false);
 let updPsgState = ref(false);
+const trainCodeMetaList = ref([]);
 const columns = [
   {
     name: "车次编号",
@@ -170,7 +182,9 @@ const initialFormState = {
   seatType: "",
   carriageSeatIndex: ""
 };
-
+let params = ref({
+  trainCode: null
+});
 const addFormState = reactive({ ...initialFormState });
 
 // 每次用完都要重制当前的默认错参数
@@ -188,6 +202,7 @@ const pagination = reactive({
   total: 0 // 总记录数
 });
 onMounted(() => {
+  getTrainCodeMeta();
   fetchData();
 });
 
@@ -197,7 +212,8 @@ const fetchData = () => {
   myAxios
     .post("/business/train_seat/query", {
       size: pagination.pageSize,
-      page: pagination.current
+      page: pagination.current,
+      trainCode: params.value.trainCode
     })
     .then(resp => {
       loading.value = false;
@@ -297,6 +313,18 @@ const getTrainSeatType = type => {
   };
   return typeMap[type] || "未知";
 };
+const getTrainCodeMeta = () => {
+  myAxios.get(`/business/train/get/train_codes`).then(resp => {
+    if (resp.data.code === 0) {
+      trainCodeMetaList.value = resp.data.content
+    } else {
+      message.warn("网络繁忙，请稍后再试！");
+    }
+  });
+}
+const getTrainCodeInfoBySearch = (data) => {
+  params.value.trainCode = data
+}
 </script>
 
 <style scoped>

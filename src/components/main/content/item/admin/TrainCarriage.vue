@@ -49,7 +49,7 @@
       cancel-text="取消"
       ok-text="新增"
       v-model:open="addPsgState"
-      title="新增乘客"
+      title="新增车厢"
       @ok="addPassenger"
     >
       <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -85,7 +85,7 @@
       cancel-text="取消"
       ok-text="修改"
       v-model:open="updPsgState"
-      title="修改乘客信息"
+      title="修改车厢信息"
       @ok="updPassengerInfo"
     >
       <a-form :model="curCarriageInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -252,13 +252,13 @@ const handleTableChange = newPagination => {
   // 重新请求数据
   fetchData();
 };
-// 执行对乘客的一些基本操作
+// 执行对车厢的一些基本操作
 const updPassengerInfo = () => {
   myAxios
     .post("/business/train_carriage/update", curCarriageInfo)
     .then(resp => {
       if (resp.data.code === 0) {
-        message.success("修改乘客信息成功");
+        message.success("修改车厢信息成功");
         fetchData();
         updPsgState.value = false;
       } else {
