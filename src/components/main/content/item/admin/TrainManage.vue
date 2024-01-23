@@ -223,7 +223,6 @@ const timeTemp = reactive({
 let formState = reactive({ ...initialFormState });
 onMounted(() => {
   getStationMeta();
-  console.log("metaList:" + metaList.value);
 });
 
 // 每次用完都要重制当前的默认错参数
@@ -397,7 +396,6 @@ const getStationStartInfo = data => {
   formState.start = data;
 };
 const getStationEndInfo = data => {
-  console.log("wochufale");
   formState.end = data;
 };
 </script>
