@@ -22,7 +22,11 @@ const routes = [
             path: 'member-center',
             name: 'member-center',
             component: () => import("../components/main/content/item/main/MemberCenter.vue")
-          },
+          },{
+            path: 'member-ticket',
+            name: 'member-ticket',
+            component: () => import("../components/main/content/item/main/MemberTicketCenter.vue")
+          }
         ]
       }, {
         path: 'admin',
