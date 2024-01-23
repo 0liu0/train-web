@@ -290,7 +290,7 @@ const onClickGenDaily = () => {
 const handleGenDailyOk = () => {
   let date = dayjs(genDaily.value.date).format("YYYY-MM-DD");
   genDailyLoading.value = true;
-  myAxios.get("/business/admin/daily-train/gen-daily/" + date).then(response => {
+  myAxios.get("/business/admin/daily-train/gen/daily-info/" + date).then(response => {
     genDailyLoading.value = false;
     let data = response.data;
     if (data.success) {
