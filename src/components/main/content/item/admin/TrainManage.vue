@@ -119,7 +119,7 @@
         <a-form-item label="出发时间">
           <a-input v-model:value="formState.startTime" />
         </a-form-item>
-        <a-form-item label="重点站">
+        <a-form-item label="终点站">
           <a-input v-model:value="formState.end" />
         </a-form-item>
         <a-form-item label="终点站拼音">
