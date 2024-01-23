@@ -66,6 +66,10 @@ const routes = [
             name: 'daily-train-carriage-manage',
             component: () => import("../components/main/content/item/admin/daily/DailyTrainCarriageManage.vue")
           },{
+            path: 'daily-train-ticket-manage',
+            name: 'daily-train-ticket-manage',
+            component: () => import("../components/main/content/item/admin/daily/DailyTrainTicketManage.vue")
+          },{
             path: 'job-task',
             name: 'job-task',
             component: () => import("../components/main/content/item/admin/JobTask.vue")

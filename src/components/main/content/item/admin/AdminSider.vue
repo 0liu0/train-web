@@ -52,6 +52,10 @@
           <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}" />
           <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp每日车站</span>
         </a-menu-item>
+        <a-menu-item key="10" @click="navigateTo('/admin/daily-train-ticket-manage')">
+          <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
+          <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp每日车票</span>
+        </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="sub3">
         <template #title>
@@ -59,7 +63,7 @@
             <user-outlined />&nbsp&nbsp&nbsp&nbsp&nbsp任务调度管理
           </span>
         </template>
-        <a-menu-item key="10" @click="navigateTo('/admin/job-task')">
+        <a-menu-item key="11" @click="navigateTo('/admin/job-task')">
           <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}" />
           <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp定时任务</span>
         </a-menu-item>
@@ -83,6 +87,7 @@ const arr = [
   "/admin/daily-train-carriage-manage",
   "/admin/daily-train-seat-manage",
   "/admin/daily-train-station-manage",
+  "/admin/daily-train-ticket-manage",
   "/admin/job-task",
 ];
 // 初始化时从localStorage读取selectedKey
