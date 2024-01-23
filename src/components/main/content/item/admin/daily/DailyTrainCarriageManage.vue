@@ -73,10 +73,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { notification } from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
 import myAxios from "../../../../../../utils/myAxios";
 import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
-const SEAT_TYPE_ARRAY = window.SEAT_TYPE_ARRAY;
 const visible = ref(false);
 let dailyTrainCarriage = ref({
   id: undefined,
@@ -241,7 +240,7 @@ const getTrainCodeMeta = () => {
     if (resp.data.code === 0) {
       trainCodeMetaList.value = resp.data.content
     } else {
-      message.warn("网络繁忙，请稍后再试！");
+      notification.warn("网络繁忙，请稍后再试！");
     }
   });
 }
