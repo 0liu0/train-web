@@ -5,7 +5,7 @@
       show-search
       style="width: 100%"
       :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-      placeholder="请选择"
+      :placeholder="tag"
       allow-clear
       tree-default-expand-all
       :tree-data="props.treeData"
@@ -36,7 +36,7 @@
 <script setup>
 import {ref, watch} from 'vue';
 
-const props = defineProps(['treeData'])
+const props = defineProps(['treeData','tag'])
 const emit = defineEmits(['getTrainCodeInfo'])
 const value = ref();
 // const treeData = ref([

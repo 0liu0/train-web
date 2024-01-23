@@ -2,7 +2,7 @@
   <p>
     <a-space>
       <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="请选择日期" />
-      <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySearch"/>
+      <SelectTrainCodeInput tag="选择车次" style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySearch"/>
       <a-button type="primary" @click="handleQuery()">查找</a-button>
       <a-button type="primary" @click="onAdd">新增</a-button>
     </a-space>
@@ -45,7 +45,7 @@
         />
       </a-form-item>
       <a-form-item label="车次编号">
-        <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySave"/>
+        <SelectTrainCodeInput tag="选择车次" style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySave"/>
       </a-form-item>
       <a-form-item label="箱序">
         <a-input v-model:value="dailyTrainCarriage.carriageIndex" />

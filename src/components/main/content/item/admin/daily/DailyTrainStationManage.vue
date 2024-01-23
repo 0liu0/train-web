@@ -3,6 +3,7 @@
     <a-space>
       <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="请选择日期" />
       <SelectTrainCodeInput
+          tag="选择车次"
         style="width:250px"
         :treeData="trainCodeMetaList"
         @getTrainCodeInfo="getTrainCodeInfoBySearch"

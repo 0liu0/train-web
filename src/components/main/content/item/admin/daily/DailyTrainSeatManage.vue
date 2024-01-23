@@ -1,7 +1,7 @@
 <template>
   <p>
     <a-space>
-      <SelectTrainCodeInput style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySearch"/>
+      <SelectTrainCodeInput tag="选择车次" style="width:250px" :treeData='trainCodeMetaList' @getTrainCodeInfo="getTrainCodeInfoBySearch"/>
       <a-button type="primary" @click="handleQuery()">查找</a-button>
     </a-space>
   </p>

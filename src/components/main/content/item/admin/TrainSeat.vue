@@ -1,9 +1,10 @@
 <template>
   <div style="float: left;margin: -10px 0 20px 40px">
     <SelectTrainCodeInput
-      style="width:250px"
-      :treeData="trainCodeMetaList"
-      @getTrainCodeInfo="getTrainCodeInfoBySearch"
+        tag="选择车次"
+        style="width:250px"
+        :treeData="trainCodeMetaList"
+        @getTrainCodeInfo="getTrainCodeInfoBySearch"
     />
     <a-button type="primary" @click="fetchData()" style="margin-left:20px">查找</a-button>
     <a-button type="primary" @click="showAddPsgModal" style="margin-left:20px">新增</a-button>
@@ -12,17 +13,17 @@
   <!-- <a-button style="float: left;margin: -10px 0 20px 40px" @click="showAddPsgModal">新增</a-button> -->
   <!-- 用户列表主体部分 -->
   <a-table
-    style="padding: 0 20px"
-    :columns="columns"
-    :data-source="passengerList"
-    :pagination="pagination"
-    :loading="loading"
-    @change="handleTableChange"
+      style="padding: 0 20px"
+      :columns="columns"
+      :data-source="passengerList"
+      :pagination="pagination"
+      :loading="loading"
+      @change="handleTableChange"
   >
     <template #headerCell="{ column }">
       <template v-if="column.key === 'trainCode'">
         <span>
-          <smile-outlined />车次编号
+          <smile-outlined/>车次编号
         </span>
       </template>
     </template>
@@ -37,13 +38,13 @@
       <template v-else-if="column.key === 'action'">
         <span>
           <a-popconfirm
-            title="确定要删除此数据吗？"
-            @confirm="deleteSeat(record.id)"
-            okText="确认"
-            cancel-text="取消"
+              title="确定要删除此数据吗？"
+              @confirm="deleteSeat(record.id)"
+              okText="确认"
+              cancel-text="取消"
           >
             <template #icon>
-              <question-circle-outlined style="color: red" />
+              <question-circle-outlined style="color: red"/>
             </template>
             <a-button class="btn" type="primary" danger>删除</a-button>
           </a-popconfirm>
@@ -55,30 +56,30 @@
   <!-- 新建座位弹窗 -->
   <div>
     <a-modal
-      cancel-text="取消"
-      ok-text="新增"
-      v-model:open="addPsgState"
-      title="新增座位"
-      @ok="addPassenger"
+        cancel-text="取消"
+        ok-text="新增"
+        v-model:open="addPsgState"
+        title="新增座位"
+        @ok="addPassenger"
     >
       <a-form :model="addFormState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="addFormState.trainCode" />
+          <a-input v-model:value="addFormState.trainCode"/>
         </a-form-item>
         <a-form-item label="车次类型">
-          <a-input v-model:value="addFormState.carriageIndex" />
+          <a-input v-model:value="addFormState.carriageIndex"/>
         </a-form-item>
         <a-form-item label="始发站">
-          <a-input v-model:value="addFormState.row" />
+          <a-input v-model:value="addFormState.row"/>
         </a-form-item>
         <a-form-item label="始发站拼音">
-          <a-input v-model:value="addFormState.col" />
+          <a-input v-model:value="addFormState.col"/>
         </a-form-item>
         <a-form-item label="出发时间">
-          <a-input v-model:value="addFormState.seatType" />
+          <a-input v-model:value="addFormState.seatType"/>
         </a-form-item>
         <a-form-item label="终点站">
-          <a-input v-model:value="addFormState.carriageSeatIndex" />
+          <a-input v-model:value="addFormState.carriageSeatIndex"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -86,30 +87,30 @@
   <!-- 修改座位信息弹窗 -->
   <div>
     <a-modal
-      cancel-text="取消"
-      ok-text="修改"
-      v-model:open="updPsgState"
-      title="修改座位信息"
-      @ok="updPassengerInfo"
+        cancel-text="取消"
+        ok-text="修改"
+        v-model:open="updPsgState"
+        title="修改座位信息"
+        @ok="updPassengerInfo"
     >
       <a-form :model="curPassengerInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="curPassengerInfo.trainCode" />
+          <a-input v-model:value="curPassengerInfo.trainCode"/>
         </a-form-item>
         <a-form-item label="车次类型">
-          <a-input v-model:value="curPassengerInfo.carriageIndex" />
+          <a-input v-model:value="curPassengerInfo.carriageIndex"/>
         </a-form-item>
         <a-form-item label="始发站">
-          <a-input v-model:value="curPassengerInfo.row" />
+          <a-input v-model:value="curPassengerInfo.row"/>
         </a-form-item>
         <a-form-item label="始发站拼音">
-          <a-input v-model:value="curPassengerInfo.col" />
+          <a-input v-model:value="curPassengerInfo.col"/>
         </a-form-item>
         <a-form-item label="出发时间">
-          <a-input v-model:value="curPassengerInfo.seatType" />
+          <a-input v-model:value="curPassengerInfo.seatType"/>
         </a-form-item>
         <a-form-item label="终点站">
-          <a-input v-model:value="curPassengerInfo.carriageSeatIndex" />
+          <a-input v-model:value="curPassengerInfo.carriageSeatIndex"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -117,9 +118,9 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import {onMounted, reactive, ref} from "vue";
 import myAxios from "@/utils/myAxios";
-import { message } from "ant-design-vue";
+import {message} from "ant-design-vue";
 import store from "@/store";
 import SelectTrainCodeInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
 
@@ -185,7 +186,7 @@ const initialFormState = {
 let params = ref({
   trainCode: null
 });
-const addFormState = reactive({ ...initialFormState });
+const addFormState = reactive({...initialFormState});
 
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
@@ -194,7 +195,7 @@ function resetFormState() {
   });
 }
 
-let curPassengerInfo = reactive({ ...initialFormState });
+let curPassengerInfo = reactive({...initialFormState});
 
 const pagination = reactive({
   current: 1, // 当前页数
@@ -210,24 +211,24 @@ onMounted(() => {
 const fetchData = () => {
   loading.value = true;
   myAxios
-    .post("/business/train_seat/query", {
-      size: pagination.pageSize,
-      page: pagination.current,
-      trainCode: params.value.trainCode
-    })
-    .then(resp => {
-      loading.value = false;
-      if (resp.data.code === 0) {
-        if (resp.data.content === null) {
-          passengerList.value = null;
+      .post("/business/train_seat/query", {
+        size: pagination.pageSize,
+        page: pagination.current,
+        trainCode: params.value.trainCode
+      })
+      .then(resp => {
+        loading.value = false;
+        if (resp.data.code === 0) {
+          if (resp.data.content === null) {
+            passengerList.value = null;
+          } else {
+            passengerList.value = resp.data.content.list;
+            pagination.total = parseInt(resp.data.content.total);
+          }
         } else {
-          passengerList.value = resp.data.content.list;
-          pagination.total = parseInt(resp.data.content.total);
+          message.error("网络错误，请重试！");
         }
-      } else {
-        message.error("网络错误，请重试！");
-      }
-    });
+      });
 };
 // 分页相关操作
 const handleTableChange = newPagination => {
