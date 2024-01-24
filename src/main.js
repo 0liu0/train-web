@@ -7,6 +7,7 @@ import * as Icons from '@ant-design/icons-vue';
 import 'ant-design-vue/dist/reset.css';
 
 const app = createApp(App);
+import './assets/js/enums';
 // 全局使用图标
 const icons = Icons;
 for (const i in icons){

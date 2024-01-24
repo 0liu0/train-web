@@ -69,4 +69,19 @@ export class Tool {
 
     return uuid.join('');
   }
+  static getFromSessionStorage(key) {
+    let value = sessionStorage.getItem(key)
+    if (value && typeof(value) !== 'undefined' && value !== 'undefined') {
+      return JSON.parse(value)
+    }
+  }
+  static setFromSessionStorage(key, data) {
+    sessionStorage.setItem(key, JSON.stringify(data))
+  }
+  static removeFromSessionStorage(key) {
+    sessionStorage.removeItem(key)
+  }
+  static clearAllSessionStorage() {
+    sessionStorage.clear()
+  }
 }

@@ -11,7 +11,7 @@
       </a-menu-item>
       <a-menu-item key="2" @click="navigateTo('/content/member-ticket')">
         <FundOutlined :style="{fontSize: '18px',color:'#08c'}"/>
-        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp我的乘车人</span>
+        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp我要购票</span>
       </a-menu-item>
     </a-menu>
   </a-layout-sider>

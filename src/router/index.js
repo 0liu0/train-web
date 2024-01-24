@@ -26,6 +26,10 @@ const routes = [
             path: 'member-ticket',
             name: 'member-ticket',
             component: () => import("../components/main/content/item/main/MemberTicketCenter.vue")
+          },{
+            path: 'member-order',
+            name: 'member-order',
+            component: () => import("../components/main/content/item/main/MemberOrder.vue")
           }
         ]
       }, {
