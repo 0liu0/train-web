@@ -1,4 +1,5 @@
 <template>
+<div class="bg">
   <div class="order-train">
     <span class="order-train-main">{{dailyTrainTicket.date}}</span>&nbsp;
     <span class="order-train-main">{{dailyTrainTicket.trainCode}}</span>次&nbsp;
@@ -95,10 +96,11 @@
         <div style="color: #999999">提示：您可以选择{{tickets.length}}个座位</div>
       </div>
       <br/>
-      最终购票：{{tickets}}
-      最终选座：{{chooseSeatObj}}
+      <!--      最终购票：{{tickets}}-->
+      <!--      最终选座：{{chooseSeatObj}}-->
     </div>
   </a-modal>
+</div>
 </template>
 
 <script>

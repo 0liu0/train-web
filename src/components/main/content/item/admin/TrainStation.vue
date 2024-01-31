@@ -202,12 +202,16 @@ const timeTemp = reactive({
 });
 let formState = reactive({ ...initialFormState });
 const metaList = ref([]);
-
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
+  let trainCode = formState.trainCode
   Object.keys(initialFormState).forEach(key => {
     formState[key] = initialFormState[key];
   });
+  timeTemp.inTime = ''
+  timeTemp.outTime = ''
+  timeTemp.stopTime = '00:00:00'
+  formState.trainCode = trainCode
 }
 
 const pagination = reactive({

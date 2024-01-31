@@ -2,17 +2,17 @@
   <a-button style="float: left;margin: -10px 0 20px 40px" @click="showAddPsgModal">新增</a-button>
   <!-- 用户列表主体部分 -->
   <a-table
-    style="padding: 0 20px"
-    :columns="columns"
-    :data-source="list"
-    :pagination="pagination"
-    :loading="loading"
-    @change="handleTableChange"
+      style="padding: 0 20px"
+      :columns="columns"
+      :data-source="list"
+      :pagination="pagination"
+      :loading="loading"
+      @change="handleTableChange"
   >
     <template #headerCell="{ column }">
       <template v-if="column.key === 'trainCode'">
         <span>
-          <smile-outlined />车次编号
+          <smile-outlined/>车次编号
         </span>
       </template>
     </template>
@@ -28,13 +28,13 @@
         <span>
           <a-button class="btn" type="primary" @click="showUpdPsgModal(record.id)">修改</a-button>
           <a-popconfirm
-            title="确定要删除此数据吗？"
-            @confirm="deletePassenger(record.id)"
-            okText="确认"
-            cancel-text="取消"
+              title="确定要删除此数据吗？"
+              @confirm="deletePassenger(record.id)"
+              okText="确认"
+              cancel-text="取消"
           >
             <template #icon>
-              <question-circle-outlined style="color: red" />
+              <question-circle-outlined style="color: red"/>
             </template>
             <a-button class="btn" type="primary" danger>删除</a-button>
           </a-popconfirm>
@@ -46,18 +46,18 @@
   <!-- 新建车厢信息弹窗 -->
   <div>
     <a-modal
-      cancel-text="取消"
-      ok-text="新增"
-      v-model:open="addPsgState"
-      title="新增车厢"
-      @ok="addPassenger"
+        cancel-text="取消"
+        ok-text="新增"
+        v-model:open="addPsgState"
+        title="新增车厢"
+        @ok="addPassenger"
     >
       <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <selectStationInput :treeData="metaList" @getTrainCodeInfo="getTrainCodeInfo" />
+          <selectStationInput :treeData="metaList" @getTrainCodeInfo="getTrainCodeInfo"/>
         </a-form-item>
         <a-form-item label="厢号">
-          <a-input v-model:value="formState.carriageIndex" />
+          <a-input v-model:value="formState.carriageIndex"/>
         </a-form-item>
         <a-form-item label="座位类型">
           <a-select v-model:value="formState.seatType" style="width: 100%">
@@ -68,13 +68,13 @@
           </a-select>
         </a-form-item>
         <a-form-item label="排数">
-          <a-input v-model:value="formState.rowCount" />
+          <a-input v-model:value="formState.rowCount"/>
         </a-form-item>
         <a-form-item label="座位数">
-          <a-input v-model:value="formState.seatCount" disabled />
+          <a-input v-model:value="formState.seatCount" disabled/>
         </a-form-item>
         <a-form-item label="列数">
-          <a-input v-model:value="formState.colCount" disabled />
+          <a-input v-model:value="formState.colCount" disabled/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -82,18 +82,18 @@
   <!-- 修改车厢信息弹窗 -->
   <div>
     <a-modal
-      cancel-text="取消"
-      ok-text="修改"
-      v-model:open="updPsgState"
-      title="修改车厢信息"
-      @ok="updPassengerInfo"
+        cancel-text="取消"
+        ok-text="修改"
+        v-model:open="updPsgState"
+        title="修改车厢信息"
+        @ok="updPassengerInfo"
     >
       <a-form :model="curCarriageInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="车次编号">
-          <a-input v-model:value="curCarriageInfo.trainCode" disabled />
+          <a-input v-model:value="curCarriageInfo.trainCode" disabled/>
         </a-form-item>
         <a-form-item label="厢号">
-          <a-input v-model:value="curCarriageInfo.carriageIndex" />
+          <a-input v-model:value="curCarriageInfo.carriageIndex"/>
         </a-form-item>
         <a-form-item label="座位类型">
           <a-select v-model:value="curCarriageInfo.seatType" style="width: 100%">
@@ -104,13 +104,13 @@
           </a-select>
         </a-form-item>
         <a-form-item label="排数">
-          <a-input v-model:value="curCarriageInfo.rowCount" />
+          <a-input v-model:value="curCarriageInfo.rowCount"/>
         </a-form-item>
         <a-form-item label="座位数">
-          <a-input v-model:value="curCarriageInfo.seatCount" disabled />
+          <a-input v-model:value="curCarriageInfo.seatCount" disabled/>
         </a-form-item>
         <a-form-item label="列数">
-          <a-input v-model:value="curCarriageInfo.colCount" disabled />
+          <a-input v-model:value="curCarriageInfo.colCount" disabled/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -118,13 +118,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import myAxios from "@/utils/myAxios";
-import { message } from "ant-design-vue";
+import {message} from "ant-design-vue";
 import store from "@/store";
 import SelectTrainCodeInput from "@/components/main/content/item/components/SelectStationInput.vue";
 import SelectStationInput from "@/components/main/content/item/components/SelectTrainCodeInput.vue";
-import { pinyin } from "pinyin-pro";
+import {pinyin} from "pinyin-pro";
 
 let curPassengerId = ref(0);
 let addPsgState = ref(false);
@@ -185,13 +185,15 @@ const initialFormState = {
   colCount: ""
 };
 
-const formState = reactive({ ...initialFormState });
+const formState = reactive({...initialFormState});
+
 // 每次用完都要重制当前的默认错参数
 function resetFormState() {
   Object.keys(initialFormState).forEach(key => {
     formState[key] = initialFormState[key];
   });
 }
+
 let curCarriageInfo = reactive({
   id: "",
   trainCode: "",
@@ -225,23 +227,23 @@ const metaList = ref([]);
 const fetchData = () => {
   loading.value = true;
   myAxios
-    .post("/business/train_carriage/query", {
-      size: pagination.pageSize,
-      page: pagination.current
-    })
-    .then(resp => {
-      loading.value = false;
-      if (resp.data.code === 0) {
-        if (resp.data.content === null) {
-          list.value = null;
+      .post("/business/train_carriage/query", {
+        size: pagination.pageSize,
+        page: pagination.current
+      })
+      .then(resp => {
+        loading.value = false;
+        if (resp.data.code === 0) {
+          if (resp.data.content === null) {
+            list.value = null;
+          } else {
+            list.value = resp.data.content.list;
+            pagination.total = parseInt(resp.data.content.total);
+          }
         } else {
-          list.value = resp.data.content.list;
-          pagination.total = parseInt(resp.data.content.total);
+          message.error("网络错误，请重试！");
         }
-      } else {
-        message.error("网络错误，请重试！");
-      }
-    });
+      });
 };
 // 分页相关操作
 const handleTableChange = newPagination => {
@@ -255,16 +257,16 @@ const handleTableChange = newPagination => {
 // 执行对车厢的一些基本操作
 const updPassengerInfo = () => {
   myAxios
-    .post("/business/train_carriage/update", curCarriageInfo)
-    .then(resp => {
-      if (resp.data.code === 0) {
-        message.success("修改车厢信息成功");
-        fetchData();
-        updPsgState.value = false;
-      } else {
-        message.warn(resp.data.message);
-      }
-    });
+      .post("/business/train_carriage/update", curCarriageInfo)
+      .then(resp => {
+        if (resp.data.code === 0) {
+          message.success("修改车厢信息成功");
+          fetchData();
+          updPsgState.value = false;
+        } else {
+          message.warn(resp.data.message);
+        }
+      });
 };
 
 const deletePassenger = id => {
@@ -337,40 +339,47 @@ formState.seatCount = computed({
   get() {
     return formState.rowCount * formState.colCount;
   },
-  set(v) {}
+  set(v) {
+  }
 });
 formState.colCount = computed({
   get() {
     if (formState.seatType === "1" || formState.seatType === "3") {
       return 4;
-    } else if (formState.seatType === "2" || formState.seatType === "4") {
+    } else if (formState.seatType === "2") {
+      return 5;
+    } else if (formState.seatType === "4") {
       return 6;
     } else {
       return 0;
     }
   },
-  set(v) {}
+  set(v) {
+  }
 });
 curCarriageInfo.seatCount = computed({
   get() {
     return curCarriageInfo.rowCount * curCarriageInfo.colCount;
   },
-  set(v) {}
+  set(v) {
+  }
 });
 curCarriageInfo.colCount = computed({
   get() {
     if (curCarriageInfo.seatType === "1" || curCarriageInfo.seatType === "3") {
       return 4;
     } else if (
-      curCarriageInfo.seatType === "2" ||
-      curCarriageInfo.seatType === "4"
+        curCarriageInfo.seatType === "2"
     ) {
+      return 5;
+    } else if (curCarriageInfo.seatType === "4") {
       return 6;
     } else {
       return 0;
     }
   },
-  set(v) {}
+  set(v) {
+  }
 });
 </script>
 
